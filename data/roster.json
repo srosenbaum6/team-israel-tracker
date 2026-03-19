@@ -362,6 +362,115 @@
       "bbrefRegId": "schrec000rj-",
       "bbrefIdVerified": false,
       "bats": "L"
+    },
+    {
+      "name": "Zack Gelof",
+      "position": "2B",
+      "positionGroup": "hitting",
+      "team": "Athletics",
+      "level": "MLB",
+      "mlbId": 680869,
+      "bbrefId": "gelofza01",
+      "bbrefRegId": null,
+      "bbrefIdVerified": true,
+      "bats": "R"
+    },
+    {
+      "name": "Joc Pederson",
+      "position": "OF",
+      "positionGroup": "hitting",
+      "team": "Texas Rangers",
+      "level": "MLB",
+      "mlbId": 592626,
+      "bbrefId": "pederjo01",
+      "bbrefRegId": null,
+      "bbrefIdVerified": true,
+      "bats": "L"
+    },
+    {
+      "name": "Paul Goldschmidt",
+      "position": "1B",
+      "positionGroup": "hitting",
+      "team": "New York Yankees",
+      "level": "MLB",
+      "mlbId": 502671,
+      "bbrefId": "goldspa01",
+      "bbrefRegId": null,
+      "bbrefIdVerified": true,
+      "bats": "R"
+    },
+    {
+      "name": "Roc Riggio",
+      "position": "2B",
+      "positionGroup": "hitting",
+      "team": "Hartford Yard Goats",
+      "level": "MiLB",
+      "mlbId": 691792,
+      "bbrefId": null,
+      "bbrefRegId": "riggio000roc",
+      "bbrefIdVerified": false,
+      "bats": "L"
+    },
+    {
+      "name": "Jordan Dissin",
+      "position": "C",
+      "positionGroup": "hitting",
+      "team": "Jersey Shore BlueClaws",
+      "level": "MiLB",
+      "mlbId": 805301,
+      "bbrefId": null,
+      "bbrefRegId": "dissin000jor",
+      "bbrefIdVerified": false,
+      "bats": "R"
+    },
+    {
+      "name": "Jason Agresti",
+      "position": "C",
+      "positionGroup": "hitting",
+      "team": "New York Boulders",
+      "level": "Indy",
+      "league": "Frontier League",
+      "mlbId": null,
+      "bbrefId": null,
+      "bbrefRegId": "agrest000jas",
+      "bbrefIdVerified": false,
+      "bats": "R"
+    },
+    {
+      "name": "JR Ritchie",
+      "position": "RHP",
+      "positionGroup": "pitching",
+      "team": "Atlanta Braves",
+      "level": "MiLB",
+      "mlbId": 702275,
+      "bbrefId": null,
+      "bbrefRegId": "ritchi000jr-",
+      "bbrefIdVerified": false,
+      "throws": "R"
+    },
+    {
+      "name": "Colton Gordon",
+      "position": "LHP",
+      "positionGroup": "pitching",
+      "team": "Houston Astros",
+      "level": "MLB",
+      "mlbId": 676467,
+      "bbrefId": "gordoco01",
+      "bbrefRegId": null,
+      "bbrefIdVerified": true,
+      "throws": "L"
+    },
+    {
+      "name": "RJ Gordon",
+      "position": "RHP",
+      "positionGroup": "pitching",
+      "team": "Binghamton Rumble Ponies",
+      "level": "MiLB",
+      "mlbId": 822161,
+      "bbrefId": null,
+      "bbrefRegId": "gordon001rj-",
+      "bbrefIdVerified": false,
+      "throws": "R"
     }
   ]
 }
