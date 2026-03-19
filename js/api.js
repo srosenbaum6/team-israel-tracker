@@ -8,7 +8,6 @@
 const MLB_API = 'https://statsapi.mlb.com/api/v1';
 
 // Sport levels queried in priority order (highest first).
-// Each is fetched in parallel; results are merged per player.
 const SPORT_LEVELS = [
   { id: 1,  abbrev: 'MLB' },
   { id: 11, abbrev: 'AAA' },
@@ -18,18 +17,10 @@ const SPORT_LEVELS = [
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-function fmt(val, decimals = 3) {
-  if (val == null || val === '') return '—';
-  const n = parseFloat(val);
-  if (isNaN(n)) return val;
-  return n.toFixed(decimals);
-}
-
 function isoDate(d) {
   return d.toISOString().slice(0, 10);
 }
 
-// anchorDate is optional YYYY-MM-DD string; defaults to today
 export function dateNDaysAgo(n, anchorDate) {
   const d = anchorDate ? new Date(anchorDate + 'T12:00:00') : new Date();
   d.setDate(d.getDate() - n);
@@ -45,7 +36,7 @@ export function today() {
 const COUNTING_FIELDS = [
   'gamesPlayed', 'gamesStarted', 'wins', 'losses',
   'hits', 'doubles', 'triples', 'homeRuns', 'rbi',
-  'baseOnBalls', 'strikeOuts', 'stolenBases',
+  'baseOnBalls', 'strikeOuts', 'stolenBases', 'caughtStealing',
   'plateAppearances', 'atBats', 'runs', 'earnedRuns',
   'hitByPitch', 'sacFlies',
 ];
@@ -80,29 +71,22 @@ function recalcHittingRates(s) {
   }
 }
 
-/**
- * Merge two stat objects from different sport levels into combined season totals.
- * statA is assumed to be from the higher-priority level (already aggregated by the API).
- */
 function combinedStats(statA, statB) {
   if (!statA) return statB;
   if (!statB) return statA;
 
   const result = {};
-
   for (const key of COUNTING_FIELDS) {
     if (statA[key] != null || statB[key] != null) {
       result[key] = (statA[key] ?? 0) + (statB[key] ?? 0);
     }
   }
 
-  // IP: convert both to outs, sum, convert back
   const totalOuts = ipToOuts(statA.inningsPitched) + ipToOuts(statB.inningsPitched);
   if (statA.inningsPitched != null || statB.inningsPitched != null) {
     result.inningsPitched = outsToIp(totalOuts);
   }
 
-  // Recalculate rate stats from combined counting stats
   recalcHittingRates(result);
 
   const ipDecimal = Math.floor(totalOuts / 3) + (totalOuts % 3) / 3;
@@ -123,13 +107,8 @@ async function mlbGet(path) {
 }
 
 /**
- * Fetch season or date-range stats for a batch of player IDs across all sport levels.
- *
- * Makes parallel requests for MLB, AAA, AA, and A+ and merges the results.
- * For players who appeared at multiple levels, stats are combined and the
- * highest level is recorded.
- *
- * @returns {Promise<Object>} map of mlbId → { stat, highestLevel }
+ * Fetch season/date-range stats across MLB, AAA, AA, A+ in parallel.
+ * Returns { [mlbId]: { stat, highestLevel } }
  */
 async function fetchMlbStats(playerIds, group, statType, startDate, endDate, season) {
   if (!playerIds.length) return {};
@@ -139,7 +118,6 @@ async function fetchMlbStats(playerIds, group, statType, startDate, endDate, sea
     ? `group=${group},type=season,season=${season}`
     : `group=${group},type=byDateRange,season=${season},startDate=${startDate},endDate=${endDate}`;
 
-  // Fetch all sport levels in parallel
   const levelResults = await Promise.all(
     SPORT_LEVELS.map(async ({ id: sportId, abbrev }) => {
       try {
@@ -151,7 +129,6 @@ async function fetchMlbStats(playerIds, group, statType, startDate, endDate, sea
           const match = statsArr.find(s =>
             s.group?.displayName === group && s.splits?.length > 0
           );
-          // splits[0] is the season total (cross-team aggregate for MLB, or single stint for MiLB)
           if (match) map[person.id] = match.splits[0].stat;
         }
         return { abbrev, map };
@@ -161,7 +138,6 @@ async function fetchMlbStats(playerIds, group, statType, startDate, endDate, sea
     })
   );
 
-  // Merge: process levels in priority order (highest first)
   const result = {};
   for (const { abbrev, map } of levelResults) {
     for (const [idStr, stat] of Object.entries(map)) {
@@ -169,46 +145,71 @@ async function fetchMlbStats(playerIds, group, statType, startDate, endDate, sea
       if (!result[id]) {
         result[id] = { stat, highestLevel: abbrev };
       } else {
-        // Player appeared at multiple levels — aggregate all
         result[id].stat = combinedStats(result[id].stat, stat);
-        // highestLevel already set from first (highest-priority) level
       }
     }
   }
-
   return result;
+}
+
+/**
+ * Check which players have ever appeared in an MLB game (career stats at sportId=1).
+ * Returns a Set of mlbIds.
+ */
+async function fetchCareerMlbPlayers(playerIds, group) {
+  if (!playerIds.length) return new Set();
+  const ids = playerIds.join(',');
+  try {
+    const url = `/people?personIds=${ids}&hydrate=stats(group=${group},type=career,sportId=1)`;
+    const data = await mlbGet(url);
+    const mlbSet = new Set();
+    for (const person of (data.people || [])) {
+      const match = (person.stats || []).find(s =>
+        s.group?.displayName === group && s.splits?.length > 0
+      );
+      if (match) mlbSet.add(person.id);
+    }
+    return mlbSet;
+  } catch {
+    return new Set();
+  }
 }
 
 // ── Public API ─────────────────────────────────────────────────────────────
 
-/**
- * Build normalized hitting rows for a set of roster players.
- */
 export async function buildHittingRows(rosterPlayers, statType, startDate, endDate, staticRows = [], season = '2026') {
   const livePlayers = rosterPlayers.filter(p => p.positionGroup === 'hitting' && p.mlbId);
   const liveIds = livePlayers.map(p => p.mlbId);
 
-  const statsMap = await fetchMlbStats(liveIds, 'hitting', statType, startDate, endDate, season);
+  const [statsMap, careerMlbSet] = await Promise.all([
+    fetchMlbStats(liveIds, 'hitting', statType, startDate, endDate, season),
+    fetchCareerMlbPlayers(liveIds, 'hitting'),
+  ]);
 
   const rows = livePlayers.map(p => {
-    const entry = statsMap[p.mlbId];
-    const s  = entry?.stat ?? null;
+    const entry        = statsMap[p.mlbId];
+    const s            = entry?.stat ?? null;
+    const hasPlayedMlb = careerMlbSet.has(p.mlbId);
+    const currentLevel = entry?.highestLevel ?? p.level;
+    const careerHighestLevel = hasPlayedMlb ? 'MLB' : currentLevel;
+
     const pa = s?.plateAppearances ?? null;
-    const bb = s?.baseOnBalls ?? null;
-    const so = s?.strikeOuts ?? null;
+    const bb = s?.baseOnBalls      ?? null;
+    const so = s?.strikeOuts       ?? null;
+
     return {
-      mlbId:        p.mlbId,
-      name:         p.name,
-      bbrefId:      p.bbrefId      ?? null,
-      bbrefRegId:   p.bbrefRegId   ?? null,
-      team:         p.team,
-      orgLevel:     p.level,
-      highestLevel: entry?.highestLevel ?? null,
-      positionGroup: 'hitting',
+      mlbId:             p.mlbId,
+      name:              p.name,
+      // Only link to the MLB BBRef player page if they've actually played in MLB
+      bbrefId:           hasPlayedMlb ? (p.bbrefId ?? null) : null,
+      bbrefRegId:        p.bbrefRegId ?? null,
+      team:              p.team,
+      currentLevel,
+      careerHighestLevel,
+      positionGroup:     'hitting',
       G:       s?.gamesPlayed     ?? null,
       PA:      pa,
       AB:      s?.atBats          ?? null,
-      H:       s?.hits            ?? null,
       doubles: s?.doubles         ?? null,
       triples: s?.triples         ?? null,
       HR:      s?.homeRuns        ?? null,
@@ -216,6 +217,7 @@ export async function buildHittingRows(rosterPlayers, statType, startDate, endDa
       BB:      bb,
       SO:      so,
       SB:      s?.stolenBases     ?? null,
+      CS:      s?.caughtStealing  ?? null,
       AVG:     s?.avg  != null ? parseFloat(s.avg)  : null,
       OBP:     s?.obp  != null ? parseFloat(s.obp)  : null,
       SLG:     s?.slg  != null ? parseFloat(s.slg)  : null,
@@ -228,64 +230,63 @@ export async function buildHittingRows(rosterPlayers, statType, startDate, endDa
   return [...rows, ...staticRows];
 }
 
-/**
- * Build normalized pitching rows.
- */
 export async function buildPitchingRows(rosterPlayers, statType, startDate, endDate, staticRows = [], season = '2026') {
   const livePlayers = rosterPlayers.filter(p => p.positionGroup === 'pitching' && p.mlbId);
   const liveIds = livePlayers.map(p => p.mlbId);
 
-  const statsMap = await fetchMlbStats(liveIds, 'pitching', statType, startDate, endDate, season);
+  const [statsMap, careerMlbSet] = await Promise.all([
+    fetchMlbStats(liveIds, 'pitching', statType, startDate, endDate, season),
+    fetchCareerMlbPlayers(liveIds, 'pitching'),
+  ]);
 
   const rows = livePlayers.map(p => {
-    const entry = statsMap[p.mlbId];
-    const s   = entry?.stat ?? null;
+    const entry        = statsMap[p.mlbId];
+    const s            = entry?.stat ?? null;
+    const hasPlayedMlb = careerMlbSet.has(p.mlbId);
+    const currentLevel = entry?.highestLevel ?? p.level;
+    const careerHighestLevel = hasPlayedMlb ? 'MLB' : currentLevel;
+
     const ip  = s?.inningsPitched != null ? parseFloat(s.inningsPitched) : null;
     const so  = s?.strikeOuts  ?? null;
     const bb  = s?.baseOnBalls ?? null;
-    const k9  = (ip && so != null && ip > 0) ? (so * 9 / ip) : null;
-    const bb9 = (ip && bb != null && ip > 0) ? (bb * 9 / ip) : null;
+    const h   = s?.hits        ?? null;
+    const hbp = s?.hitByPitch  ?? null;
+
+    // BFP = outs recorded (from IP) + H + BB + HBP
+    const ipOuts = ip != null ? ipToOuts(s.inningsPitched) : 0;
+    const bfp    = ip != null ? (ipOuts + (h ?? 0) + (bb ?? 0) + (hbp ?? 0)) : null;
+
+    const soPct   = (bfp && so != null && bfp > 0) ? so / bfp : null;
+    const bbPct   = (bfp && bb != null && bfp > 0) ? bb / bfp : null;
+    const sobbPct = (soPct != null && bbPct != null) ? soPct - bbPct : null;
+
     return {
-      mlbId:        p.mlbId,
-      name:         p.name,
-      bbrefId:      p.bbrefId    ?? null,
-      bbrefRegId:   p.bbrefRegId ?? null,
-      team:         p.team,
-      orgLevel:     p.level,
-      highestLevel: entry?.highestLevel ?? null,
-      positionGroup: 'pitching',
-      G:    s?.gamesPlayed  ?? null,
-      GS:   s?.gamesStarted ?? null,
-      IP:   ip,
-      W:    s?.wins         ?? null,
-      L:    s?.losses       ?? null,
-      H:    s?.hits         ?? null,
-      ER:   s?.earnedRuns   ?? null,
-      BB:   bb,
-      SO:   so,
-      ERA:  s?.era  != null ? parseFloat(s.era)  : null,
-      WHIP: s?.whip != null ? parseFloat(s.whip) : null,
-      K9:   k9,
-      BB9:  bb9,
+      mlbId:             p.mlbId,
+      name:              p.name,
+      bbrefId:           hasPlayedMlb ? (p.bbrefId ?? null) : null,
+      bbrefRegId:        p.bbrefRegId ?? null,
+      team:              p.team,
+      currentLevel,
+      careerHighestLevel,
+      positionGroup:     'pitching',
+      G:        s?.gamesPlayed  ?? null,
+      GS:       s?.gamesStarted ?? null,
+      IP:       ip,
+      ERA:      s?.era  != null ? parseFloat(s.era)  : null,
+      WHIP:     s?.whip != null ? parseFloat(s.whip) : null,
+      SOPct:    soPct,
+      BBPct:    bbPct,
+      SOBBPct:  sobbPct,
     };
   });
 
   return [...rows, ...staticRows];
 }
 
-/**
- * Fetch transactions for all roster players with MLB IDs.
- * @param {number[]} mlbIds
- * @param {string} startDate  YYYY-MM-DD
- * @param {string} endDate    YYYY-MM-DD
- * @returns {Promise<Object[]>} sorted by date desc
- */
 export async function fetchTransactions(mlbIds, startDate, endDate) {
   if (!mlbIds.length) return [];
 
   const ids = mlbIds.join(',');
-  // sportId=1 = MLB; sportId=11 = MiLB (all levels)
-  // We fetch both so MiLB call-ups/optionings appear
   const [mlbData, milbData] = await Promise.allSettled([
     mlbGet(`/transactions?playerIds=${ids}&startDate=${startDate}&endDate=${endDate}&sportId=1`),
     mlbGet(`/transactions?playerIds=${ids}&startDate=${startDate}&endDate=${endDate}&sportId=11`),

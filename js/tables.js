@@ -15,6 +15,20 @@ function fmt(val, decimals) {
   return n.toFixed(decimals);
 }
 
+/**
+ * Format a rate stat (AVG/OBP/SLG/OPS) without a leading zero.
+ * ".314" not "0.314". Values >= 1 keep their leading digit: "1.045".
+ */
+function fmtRate(val, decimals = 3) {
+  if (val == null) return '—';
+  const n = parseFloat(val);
+  if (isNaN(n)) return '—';
+  const fixed = n.toFixed(decimals);
+  if (n >= 0 && n < 1)   return fixed.replace(/^0/, '');
+  if (n > -1 && n < 0)   return fixed.replace(/^-0/, '-');
+  return fixed;
+}
+
 function fmtPct(val) {
   if (val == null) return '—';
   return (val * 100).toFixed(1) + '%';
@@ -37,8 +51,8 @@ function levelBadge(level) {
 
 /**
  * Build a player name link.
- * Prefers the MLB BBRef player page (bbrefId), falls back to the
- * BBRef register page (bbrefRegId) for minor-league-only players.
+ * Uses the MLB BBRef player page (bbrefId) for players who have appeared in MLB.
+ * Falls back to the BBRef register page (bbrefRegId) for minor-league-only players.
  */
 function playerLink(name, bbrefId, bbrefRegId) {
   if (bbrefId) {
@@ -54,63 +68,60 @@ function playerLink(name, bbrefId, bbrefRegId) {
 }
 
 // ── Hitting row → HTML ─────────────────────────────────────────────────────
+// Columns: Player, Org, Current Level, Highest Level,
+//          G, PA, AB, AVG, OBP, SLG, OPS, SO%, BB%, 2B, 3B, HR, SB, RBI, CS
 
 export function hittingRowHtml(row) {
   return `
-    <tr data-org-level="${row.orgLevel ?? ''}" data-played-level="${row.highestLevel ?? ''}" data-type="hitting" data-name="${row.name.toLowerCase()}">
+    <tr data-current-level="${row.currentLevel ?? ''}" data-highest-level="${row.careerHighestLevel ?? ''}" data-type="hitting" data-name="${row.name.toLowerCase()}">
       <td class="player-name-cell">${playerLink(row.name, row.bbrefId, row.bbrefRegId)}</td>
       <td>${row.team}</td>
-      <td>${levelBadge(row.orgLevel)}</td>
-      <td>${levelBadge(row.highestLevel)}</td>
+      <td>${levelBadge(row.currentLevel)}</td>
+      <td>${levelBadge(row.careerHighestLevel)}</td>
       <td class="num-col">${row.G       ?? '—'}</td>
       <td class="num-col">${row.PA      ?? '—'}</td>
       <td class="num-col">${row.AB      ?? '—'}</td>
-      <td class="num-col">${row.H       ?? '—'}</td>
+      <td class="num-col">${fmtRate(row.AVG)}</td>
+      <td class="num-col">${fmtRate(row.OBP)}</td>
+      <td class="num-col">${fmtRate(row.SLG)}</td>
+      <td class="num-col">${fmtRate(row.OPS)}</td>
+      <td class="num-col">${fmtPct(row.SOPct)}</td>
+      <td class="num-col">${fmtPct(row.BBPct)}</td>
       <td class="num-col">${row.doubles ?? '—'}</td>
       <td class="num-col">${row.triples ?? '—'}</td>
       <td class="num-col">${row.HR      ?? '—'}</td>
-      <td class="num-col">${row.RBI     ?? '—'}</td>
-      <td class="num-col">${row.BB      ?? '—'}</td>
-      <td class="num-col">${row.SO      ?? '—'}</td>
       <td class="num-col">${row.SB      ?? '—'}</td>
-      <td class="num-col">${fmt(row.AVG, 3)}</td>
-      <td class="num-col">${fmt(row.OBP, 3)}</td>
-      <td class="num-col">${fmt(row.SLG, 3)}</td>
-      <td class="num-col">${fmt(row.OPS, 3)}</td>
-      <td class="num-col">${fmtPct(row.SOPct)}</td>
-      <td class="num-col">${fmtPct(row.BBPct)}</td>
+      <td class="num-col">${row.RBI     ?? '—'}</td>
+      <td class="num-col">${row.CS      ?? '—'}</td>
     </tr>`.trim();
 }
 
 // ── Pitching row → HTML ────────────────────────────────────────────────────
+// Columns: Player, Org, Current Level, Highest Level,
+//          G, GS, IP, SO%, BB%, SO-BB%, WHIP, ERA
 
 export function pitchingRowHtml(row) {
   return `
-    <tr data-org-level="${row.orgLevel ?? ''}" data-played-level="${row.highestLevel ?? ''}" data-type="pitching" data-name="${row.name.toLowerCase()}">
+    <tr data-current-level="${row.currentLevel ?? ''}" data-highest-level="${row.careerHighestLevel ?? ''}" data-type="pitching" data-name="${row.name.toLowerCase()}">
       <td class="player-name-cell">${playerLink(row.name, row.bbrefId, row.bbrefRegId)}</td>
       <td>${row.team}</td>
-      <td>${levelBadge(row.orgLevel)}</td>
-      <td>${levelBadge(row.highestLevel)}</td>
-      <td class="num-col">${row.G   ?? '—'}</td>
-      <td class="num-col">${row.GS  ?? '—'}</td>
-      <td class="num-col">${row.IP  != null ? parseFloat(row.IP).toFixed(1) : '—'}</td>
-      <td class="num-col">${row.W   ?? '—'}</td>
-      <td class="num-col">${row.L   ?? '—'}</td>
-      <td class="num-col">${row.H   ?? '—'}</td>
-      <td class="num-col">${row.ER  ?? '—'}</td>
-      <td class="num-col">${row.BB  ?? '—'}</td>
-      <td class="num-col">${row.SO  ?? '—'}</td>
-      <td class="num-col">${fmt(row.ERA,  2)}</td>
+      <td>${levelBadge(row.currentLevel)}</td>
+      <td>${levelBadge(row.careerHighestLevel)}</td>
+      <td class="num-col">${row.G  ?? '—'}</td>
+      <td class="num-col">${row.GS ?? '—'}</td>
+      <td class="num-col">${row.IP != null ? parseFloat(row.IP).toFixed(1) : '—'}</td>
+      <td class="num-col">${fmtPct(row.SOPct)}</td>
+      <td class="num-col">${fmtPct(row.BBPct)}</td>
+      <td class="num-col">${fmtPct(row.SOBBPct)}</td>
       <td class="num-col">${fmt(row.WHIP, 2)}</td>
-      <td class="num-col">${fmt(row.K9,   2)}</td>
-      <td class="num-col">${fmt(row.BB9,  2)}</td>
+      <td class="num-col">${fmt(row.ERA,  2)}</td>
     </tr>`.trim();
 }
 
 // ── Transaction row → HTML ─────────────────────────────────────────────────
 
 export function transactionRowHtml(txn, rosterMap) {
-  const player  = rosterMap[txn.mlbId];
+  const player     = rosterMap[txn.mlbId];
   const bbrefId    = player?.bbrefId    ?? null;
   const bbrefRegId = player?.bbrefRegId ?? null;
   const displayDate = txn.date ? txn.date.slice(0, 10) : '—';
@@ -130,7 +141,7 @@ export function transactionRowHtml(txn, rosterMap) {
 export function populateTable(tableId, htmlRows, emptyMessage = 'No data available.') {
   const table = document.getElementById(tableId);
   if (!table) return;
-  const tbody = table.querySelector('tbody');
+  const tbody    = table.querySelector('tbody');
   const colCount = table.querySelector('thead tr')?.children.length ?? 6;
 
   if (!htmlRows.length) {
@@ -168,11 +179,13 @@ function sortTableByColumn(table, colIndex, descending) {
     if (aText === '—') return 1;
     if (bText === '—') return -1;
 
-    const aNum = parseFloat(aText.replace(/[^0-9.\-]/g, ''));
-    const bNum = parseFloat(bText.replace(/[^0-9.\-]/g, ''));
+    // Strip % sign and leading dot/dash for numeric comparison
+    const clean = t => t.replace('%', '').replace(/^\./, '0.').replace(/^-\./, '-0.');
+    const aNum  = parseFloat(clean(aText));
+    const bNum  = parseFloat(clean(bText));
     const isNumeric = !isNaN(aNum) && !isNaN(bNum);
 
-    let cmp = isNumeric ? (aNum - bNum) : aText.localeCompare(bText);
+    const cmp = isNumeric ? (aNum - bNum) : aText.localeCompare(bText);
     return descending ? -cmp : cmp;
   });
 
@@ -182,26 +195,26 @@ function sortTableByColumn(table, colIndex, descending) {
 // ── Filtering ──────────────────────────────────────────────────────────────
 
 export function applyFilters() {
-  const orgVal    = document.querySelector('[data-filter="orgLevel"].active')?.dataset.value    ?? 'all';
-  const playedVal = document.querySelector('[data-filter="playedLevel"].active')?.dataset.value ?? 'all';
-  const typeVal   = document.querySelector('[data-filter="type"].active')?.dataset.value         ?? 'all';
-  const searchVal = (document.getElementById('playerSearch')?.value ?? '').toLowerCase().trim();
+  const currentVal = document.querySelector('[data-filter="currentLevel"].active')?.dataset.value  ?? 'all';
+  const highestVal = document.querySelector('[data-filter="highestLevel"].active')?.dataset.value  ?? 'all';
+  const typeVal    = document.querySelector('[data-filter="type"].active')?.dataset.value           ?? 'all';
+  const searchVal  = (document.getElementById('playerSearch')?.value ?? '').toLowerCase().trim();
 
   document.querySelectorAll('.stat-table').forEach(table => {
     if (table.id === 'tbl-transactions') return;
 
     table.querySelectorAll('tbody tr').forEach(row => {
-      const rowOrg    = row.dataset.orgLevel    ?? '';
-      const rowPlayed = row.dataset.playedLevel ?? '';
-      const rowType   = row.dataset.type        ?? '';
-      const rowName   = row.dataset.name        ?? '';
+      const rowCurrent = row.dataset.currentLevel ?? '';
+      const rowHighest = row.dataset.highestLevel ?? '';
+      const rowType    = row.dataset.type         ?? '';
+      const rowName    = row.dataset.name         ?? '';
 
-      const orgOk    = orgVal    === 'all' || rowOrg    === orgVal;
-      const playedOk = playedVal === 'all' || rowPlayed === playedVal;
-      const typeOk   = typeVal   === 'all' || rowType   === typeVal;
-      const searchOk = !searchVal || rowName.includes(searchVal);
+      const currentOk = currentVal === 'all' || rowCurrent === currentVal;
+      const highestOk = highestVal === 'all' || rowHighest === highestVal;
+      const typeOk    = typeVal    === 'all' || rowType    === typeVal;
+      const searchOk  = !searchVal || rowName.includes(searchVal);
 
-      row.hidden = !(orgOk && playedOk && typeOk && searchOk);
+      row.hidden = !(currentOk && highestOk && typeOk && searchOk);
     });
   });
 }

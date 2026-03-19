@@ -88,56 +88,58 @@ const SEASON_END = {
   // ── Convert indy/other JSON entries → normalized row objects ─────────────
 
   function buildStaticHittingRows(source) {
-    return (source?.hitting ?? []).map(p => ({
-      mlbId:        p.playerId  ?? null,
-      name:         p.playerName,
-      bbrefId:      p.bbrefId   ?? null,
-      bbrefRegId:   p.bbrefRegId ?? null,
-      team:         p.team,
-      orgLevel:     p.level,
-      highestLevel: p.level,
-      positionGroup: 'hitting',
-      G:        p.stats?.G       ?? null,
-      PA:       p.stats?.PA      ?? null,
-      AB:       p.stats?.AB      ?? null,
-      H:        p.stats?.H       ?? null,
-      doubles:  p.stats?.doubles ?? null,
-      triples:  p.stats?.triples ?? null,
-      HR:       p.stats?.HR      ?? null,
-      RBI:      p.stats?.RBI     ?? null,
-      BB:       p.stats?.BB      ?? null,
-      SO:       p.stats?.SO      ?? null,
-      SB:       p.stats?.SB      ?? null,
-      AVG:      p.stats?.AVG     ?? null,
-      OBP:      p.stats?.OBP     ?? null,
-      SLG:      p.stats?.SLG     ?? null,
-      OPS:      p.stats?.OPS     ?? null,
-    }));
+    return (source?.hitting ?? []).map(p => {
+      const pa = p.stats?.PA ?? null;
+      const bb = p.stats?.BB ?? null;
+      const so = p.stats?.SO ?? null;
+      return {
+        mlbId:             p.playerId   ?? null,
+        name:              p.playerName,
+        bbrefId:           p.bbrefId    ?? null,
+        bbrefRegId:        p.bbrefRegId ?? null,
+        team:              p.team,
+        currentLevel:      p.level,
+        careerHighestLevel: p.level,
+        positionGroup:     'hitting',
+        G:       p.stats?.G       ?? null,
+        PA:      pa,
+        AB:      p.stats?.AB      ?? null,
+        doubles: p.stats?.doubles ?? null,
+        triples: p.stats?.triples ?? null,
+        HR:      p.stats?.HR      ?? null,
+        RBI:     p.stats?.RBI     ?? null,
+        BB:      bb,
+        SO:      so,
+        SB:      p.stats?.SB      ?? null,
+        CS:      p.stats?.CS      ?? null,
+        AVG:     p.stats?.AVG     ?? null,
+        OBP:     p.stats?.OBP     ?? null,
+        SLG:     p.stats?.SLG     ?? null,
+        OPS:     p.stats?.OPS     ?? null,
+        SOPct:   (pa && so != null && pa > 0) ? so / pa : null,
+        BBPct:   (pa && bb != null && pa > 0) ? bb / pa : null,
+      };
+    });
   }
 
   function buildStaticPitchingRows(source) {
     return (source?.pitching ?? []).map(p => ({
-      mlbId:        p.playerId  ?? null,
-      name:         p.playerName,
-      bbrefId:      p.bbrefId   ?? null,
-      bbrefRegId:   p.bbrefRegId ?? null,
-      team:         p.team,
-      orgLevel:     p.level,
-      highestLevel: p.level,
-      positionGroup: 'pitching',
+      mlbId:             p.playerId   ?? null,
+      name:              p.playerName,
+      bbrefId:           p.bbrefId    ?? null,
+      bbrefRegId:        p.bbrefRegId ?? null,
+      team:              p.team,
+      currentLevel:      p.level,
+      careerHighestLevel: p.level,
+      positionGroup:     'pitching',
       G:        p.stats?.G    ?? null,
       GS:       p.stats?.GS   ?? null,
       IP:       p.stats?.IP   ?? null,
-      W:        p.stats?.W    ?? null,
-      L:        p.stats?.L    ?? null,
-      H:        p.stats?.H    ?? null,
-      ER:       p.stats?.ER   ?? null,
-      BB:       p.stats?.BB   ?? null,
-      SO:       p.stats?.SO   ?? null,
       ERA:      p.stats?.ERA  ?? null,
       WHIP:     p.stats?.WHIP ?? null,
-      K9:       p.stats?.K9   ?? null,
-      BB9:      p.stats?.BB9  ?? null,
+      SOPct:    null,
+      BBPct:    null,
+      SOBBPct:  null,
     }));
   }
 
