@@ -6,7 +6,7 @@
  */
 
 import {
-  buildHittingRows, buildPitchingRows, fetchTransactions, dateNDaysAgo, today,
+  buildHittingRows, buildPitchingRows, fetchTransactions, dateNDaysAgo, today, SEASON_END,
 } from './api.js';
 
 import {
@@ -22,8 +22,18 @@ import {
   let indyStats = null;     // loaded once from indy_stats.json
   let otherStats = null;    // loaded once from other_stats.json
 
+  // Default to 2025 since the 2026 season has not yet started
+  let selectedSeason = '2025';
+
   // Track which tabs have already been loaded to avoid redundant API calls
-  const loaded = { season: false, last30: false, last10: false, transactions: false };
+  // Reset whenever the season changes
+  let loaded = { season: false, last30: false, last10: false, transactions: false };
+
+  // Returns the "anchor" end-date for date-range tabs.
+  // For past seasons, use the known season-end date; for current, use today.
+  function seasonEndDate() {
+    return SEASON_END[selectedSeason] ?? today();
+  }
 
   // ── UI helpers ──────────────────────────────────────────────────────────
 
@@ -139,8 +149,8 @@ import {
       ];
 
       const [hittingRows, pitchingRows] = await Promise.all([
-        buildHittingRows(roster,  'season', null, null, staticHitting),
-        buildPitchingRows(roster, 'season', null, null, staticPitching),
+        buildHittingRows(roster,  'season', null, null, staticHitting,  selectedSeason),
+        buildPitchingRows(roster, 'season', null, null, staticPitching, selectedSeason),
       ]);
 
       populateTable('tbl-season-hitting',  hittingRows.map(hittingRowHtml),  'No hitting stats available.');
@@ -164,8 +174,10 @@ import {
     try {
       await Promise.all([loadIndyStats(), loadOtherStats()]);
 
-      const startDate = dateNDaysAgo(days);
-      const endDate   = today();
+      // For past seasons, anchor the end date to the known season end
+      // rather than today so we always get the final N days of that season.
+      const endDate   = seasonEndDate();
+      const startDate = dateNDaysAgo(days, endDate);
 
       // Show date range note
       const note = document.getElementById(`note-${tabKey}`);
@@ -176,8 +188,8 @@ import {
       const staticPitching = buildStaticPitchingRows(indyStats).concat(buildStaticPitchingRows(otherStats));
 
       const [hittingRows, pitchingRows] = await Promise.all([
-        buildHittingRows(roster,  'byDateRange', startDate, endDate, staticHitting),
-        buildPitchingRows(roster, 'byDateRange', startDate, endDate, staticPitching),
+        buildHittingRows(roster,  'byDateRange', startDate, endDate, staticHitting,  selectedSeason),
+        buildPitchingRows(roster, 'byDateRange', startDate, endDate, staticPitching, selectedSeason),
       ]);
 
       populateTable(`tbl-${tabKey}-hitting`,  hittingRows.map(hittingRowHtml),  'No hitting stats in this window.');
@@ -235,6 +247,41 @@ import {
     }
   }
 
+  // ── Season selector ──────────────────────────────────────────────────────
+
+  function initSeasonSelector() {
+    document.querySelectorAll('.season-btn').forEach(btn => {
+      if (btn.dataset.season === selectedSeason) btn.classList.add('active');
+      btn.addEventListener('click', () => {
+        if (btn.dataset.season === selectedSeason) return; // no-op
+        selectedSeason = btn.dataset.season;
+
+        // Update button highlight
+        document.querySelectorAll('.season-btn').forEach(b =>
+          b.classList.toggle('active', b.dataset.season === selectedSeason)
+        );
+
+        // Reset all loaded flags so tabs re-fetch for the new season
+        loaded = { season: false, last30: false, last10: false, transactions: false };
+
+        // Update transactions default date range to match season
+        const startInput = document.getElementById('txnStartDate');
+        const endInput   = document.getElementById('txnEndDate');
+        if (selectedSeason === '2025') {
+          if (startInput) startInput.value = '2025-03-20';
+          if (endInput)   endInput.value   = '2025-10-30';
+        } else {
+          if (startInput) startInput.value = dateNDaysAgo(90);
+          if (endInput)   endInput.value   = today();
+        }
+
+        // Reload the currently active tab
+        const activeTab = document.querySelector('.tab.active')?.dataset.tab ?? 'season';
+        switchTab(activeTab);
+      });
+    });
+  }
+
   // ── Tab switching ────────────────────────────────────────────────────────
 
   function switchTab(tabName) {
@@ -261,11 +308,11 @@ import {
   // ── Transactions fetch button ────────────────────────────────────────────
 
   function initTransactionControls() {
-    // Default date range: last 90 days
+    // Default date range: full 2025 season (matches default selectedSeason)
     const startInput = document.getElementById('txnStartDate');
     const endInput   = document.getElementById('txnEndDate');
-    if (startInput) startInput.value = dateNDaysAgo(90);
-    if (endInput)   endInput.value   = today();
+    if (startInput) startInput.value = '2025-03-20';
+    if (endInput)   endInput.value   = '2025-10-30';
 
     document.getElementById('txnFetchBtn')?.addEventListener('click', () => {
       const start = startInput?.value || dateNDaysAgo(90);
@@ -285,6 +332,7 @@ import {
   }
 
   initFilters();
+  initSeasonSelector();
   initTransactionControls();
 
   // Wire up tab clicks

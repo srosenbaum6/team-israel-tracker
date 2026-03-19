@@ -6,7 +6,13 @@
  */
 
 const MLB_API = 'https://statsapi.mlb.com/api/v1';
-const CURRENT_SEASON = '2026';
+
+// The last day of the 2025 MLB regular season — used to anchor date-range
+// tabs when the 2025 season is selected.
+export const SEASON_END = {
+  '2025': '2025-09-28',
+  '2026': null,   // null = use today's date (season in progress)
+};
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -30,8 +36,9 @@ function isoDate(d) {
   return d.toISOString().slice(0, 10);
 }
 
-export function dateNDaysAgo(n) {
-  const d = new Date();
+// anchorDate is optional YYYY-MM-DD string; defaults to today
+export function dateNDaysAgo(n, anchorDate) {
+  const d = anchorDate ? new Date(anchorDate + 'T12:00:00') : new Date();
   d.setDate(d.getDate() - n);
   return isoDate(d);
 }
@@ -57,16 +64,16 @@ async function mlbGet(path) {
  * @param {string} [endDate]    YYYY-MM-DD  (required for byDateRange)
  * @returns {Promise<Object>} map of mlbId → stat object (or null)
  */
-async function fetchMlbStats(playerIds, group, statType, startDate, endDate) {
+async function fetchMlbStats(playerIds, group, statType, startDate, endDate, season) {
   if (!playerIds.length) return {};
 
   const ids = playerIds.join(',');
   let hydrateParam;
 
   if (statType === 'season') {
-    hydrateParam = `stats(group=${group},type=season,season=${CURRENT_SEASON})`;
+    hydrateParam = `stats(group=${group},type=season,season=${season})`;
   } else {
-    hydrateParam = `stats(group=${group},type=byDateRange,season=${CURRENT_SEASON},startDate=${startDate},endDate=${endDate})`;
+    hydrateParam = `stats(group=${group},type=byDateRange,season=${season},startDate=${startDate},endDate=${endDate})`;
   }
 
   const url = `/people?personIds=${ids}&hydrate=${hydrateParam}`;
@@ -97,11 +104,11 @@ async function fetchMlbStats(playerIds, group, statType, startDate, endDate) {
  * @param {Object[]} [staticRows]   - pre-built rows from indy/other JSON files
  * @returns {Promise<Object[]>}
  */
-export async function buildHittingRows(rosterPlayers, statType, startDate, endDate, staticRows = []) {
+export async function buildHittingRows(rosterPlayers, statType, startDate, endDate, staticRows = [], season = '2026') {
   const livePlayers = rosterPlayers.filter(p => p.positionGroup === 'hitting' && p.mlbId);
   const liveIds = livePlayers.map(p => p.mlbId);
 
-  const statsMap = await fetchMlbStats(liveIds, 'hitting', statType, startDate, endDate);
+  const statsMap = await fetchMlbStats(liveIds, 'hitting', statType, startDate, endDate, season);
 
   const rows = livePlayers.map(p => {
     const s = statsMap[p.mlbId];
@@ -137,11 +144,11 @@ export async function buildHittingRows(rosterPlayers, statType, startDate, endDa
 /**
  * Build normalized pitching rows.
  */
-export async function buildPitchingRows(rosterPlayers, statType, startDate, endDate, staticRows = []) {
+export async function buildPitchingRows(rosterPlayers, statType, startDate, endDate, staticRows = [], season = '2026') {
   const livePlayers = rosterPlayers.filter(p => p.positionGroup === 'pitching' && p.mlbId);
   const liveIds = livePlayers.map(p => p.mlbId);
 
-  const statsMap = await fetchMlbStats(liveIds, 'pitching', statType, startDate, endDate);
+  const statsMap = await fetchMlbStats(liveIds, 'pitching', statType, startDate, endDate, season);
 
   const rows = livePlayers.map(p => {
     const s = statsMap[p.mlbId];

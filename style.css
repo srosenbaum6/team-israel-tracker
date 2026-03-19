@@ -59,6 +59,42 @@ main {
   padding: 0 16px 40px;
 }
 
+/* ── Season selector ───────────────────────────────── */
+.season-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  margin-bottom: 4px;
+}
+
+.season-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+
+.season-btn {
+  padding: 5px 18px;
+  border: 2px solid var(--blue);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+
+.season-btn:hover {
+  background: var(--blue-pale);
+}
+
+.season-btn.active {
+  background: var(--blue);
+  color: var(--white);
+}
+
 /* ── Tabs ──────────────────────────────────────────── */
 .tabs {
   display: flex;
