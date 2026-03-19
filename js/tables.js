@@ -54,7 +54,7 @@ function levelBadge(level) {
  * Uses the MLB BBRef player page (bbrefId) for players who have appeared in MLB.
  * Falls back to the BBRef register page (bbrefRegId) for minor-league-only players.
  */
-function playerLink(name, bbrefId, bbrefRegId, mlbId) {
+export function playerLink(name, bbrefId, bbrefRegId, mlbId) {
   if (bbrefId) {
     const letter = bbrefId[0];
     return `<a href="${BBREF_BASE}/${letter}/${bbrefId}.shtml" target="_blank" rel="noopener">${name}</a>`;
@@ -258,7 +258,7 @@ export function colorizeTable(tableId, colConfig, paCol = null, paMin = 50) {
     // Determine if this is a low-PA row (gray out stats)
     let isLowPa = false;
     if (paCol !== null) {
-      const paVal = parseInt(row.cells[paCol]?.textContent?.trim(), 10);
+      const paVal = parseFloat(row.cells[paCol]?.textContent?.trim());
       isLowPa = !isNaN(paVal) && paVal < paMin;
     }
 
@@ -314,8 +314,21 @@ export function applyFilters() {
   const typeVal    = document.querySelector('[data-filter="type"].active')?.dataset.value           ?? 'all';
   const searchVal  = (document.getElementById('playerSearch')?.value ?? '').toLowerCase().trim();
 
+  const defenseView = document.getElementById('defense-view');
+
+  if (typeVal === 'defense') {
+    // Show defense view; hide all regular stat sections
+    if (defenseView) defenseView.hidden = false;
+    document.querySelectorAll('.stat-section').forEach(s => { s.hidden = true; });
+    return;
+  }
+
+  // Non-defense: hide defense view, restore stat sections
+  if (defenseView) defenseView.hidden = true;
+  document.querySelectorAll('.stat-section').forEach(s => { s.hidden = false; });
+
   document.querySelectorAll('.stat-table').forEach(table => {
-    if (table.id === 'tbl-transactions') return;
+    if (table.id === 'tbl-transactions' || table.id === 'tbl-defense') return;
 
     table.querySelectorAll('tbody tr').forEach(row => {
       const rowCurrent = row.dataset.currentLevel ?? '';

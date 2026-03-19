@@ -30,7 +30,6 @@
       <button class="tab"        data-tab="last30"       role="tab">Last 30 Days</button>
       <button class="tab"        data-tab="last10"       role="tab">Last 10 Days</button>
       <button class="tab"        data-tab="transactions" role="tab">Transactions</button>
-      <button class="tab"        data-tab="defense"      role="tab">Defense</button>
     </nav>
 
     <!-- ── Shared filter bar ── -->
@@ -59,6 +58,7 @@
         <button class="filter-btn active" data-filter="type" data-value="all">All</button>
         <button class="filter-btn" data-filter="type" data-value="hitting">Hitters</button>
         <button class="filter-btn" data-filter="type" data-value="pitching">Pitchers</button>
+        <button class="filter-btn" data-filter="type" data-value="defense">Defense</button>
       </div>
       <div class="filter-group search-group">
         <input type="text" id="playerSearch" placeholder="Search player..." aria-label="Search player" />
@@ -68,6 +68,94 @@
     <!-- ── Loading state ── -->
     <div id="loadingMsg" class="loading-msg" hidden>Loading stats...</div>
     <div id="errorMsg"   class="error-msg"   hidden></div>
+
+    <!-- ── Defense view (shown when Type=Defense is selected) ── -->
+    <div id="defense-view" hidden>
+
+      <p class="date-range-note" id="note-defense"></p>
+
+      <div class="field-diagram">
+        <div class="field-inner">
+
+          <!-- Outfield -->
+          <div class="field-row field-row-of">
+            <div class="pos-box">
+              <div class="pos-label">LF</div>
+              <div class="pos-players" id="players-LF"><span class="pos-empty">—</span></div>
+            </div>
+            <div class="pos-box">
+              <div class="pos-label">CF</div>
+              <div class="pos-players" id="players-CF"><span class="pos-empty">—</span></div>
+            </div>
+            <div class="pos-box">
+              <div class="pos-label">RF</div>
+              <div class="pos-players" id="players-RF"><span class="pos-empty">—</span></div>
+            </div>
+          </div>
+
+          <!-- Infield (no pitcher box — decorative mound in center) -->
+          <div class="field-row field-row-if">
+            <div class="pos-box">
+              <div class="pos-label">3B</div>
+              <div class="pos-players" id="players-3B"><span class="pos-empty">—</span></div>
+            </div>
+            <div class="pos-box">
+              <div class="pos-label">SS</div>
+              <div class="pos-players" id="players-SS"><span class="pos-empty">—</span></div>
+            </div>
+            <div class="pos-mound"></div>
+            <div class="pos-box">
+              <div class="pos-label">2B</div>
+              <div class="pos-players" id="players-2B"><span class="pos-empty">—</span></div>
+            </div>
+            <div class="pos-box">
+              <div class="pos-label">1B</div>
+              <div class="pos-players" id="players-1B"><span class="pos-empty">—</span></div>
+            </div>
+          </div>
+
+          <!-- Battery / DH -->
+          <div class="field-row field-row-batt">
+            <div class="pos-box">
+              <div class="pos-label">C</div>
+              <div class="pos-players" id="players-C"><span class="pos-empty">—</span></div>
+            </div>
+            <div class="pos-box">
+              <div class="pos-label">DH</div>
+              <div class="pos-players" id="players-DH"><span class="pos-empty">—</span></div>
+            </div>
+          </div>
+
+        </div><!-- /.field-inner -->
+      </div><!-- /.field-diagram -->
+
+      <!-- Position table -->
+      <section class="stat-section" style="margin-top:24px;">
+        <h2>Games by Position</h2>
+        <div class="table-wrapper">
+          <table class="stat-table sortable" id="tbl-defense">
+            <thead>
+              <tr>
+                <th class="sortable-col name-col">Player</th>
+                <th class="sortable-col num-col">C</th>
+                <th class="sortable-col num-col">1B</th>
+                <th class="sortable-col num-col">2B</th>
+                <th class="sortable-col num-col">3B</th>
+                <th class="sortable-col num-col">SS</th>
+                <th class="sortable-col num-col">LF</th>
+                <th class="sortable-col num-col">CF</th>
+                <th class="sortable-col num-col">RF</th>
+                <th class="sortable-col num-col">DH</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="10" class="empty-row">Select Defense to load...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div><!-- /#defense-view -->
 
     <!-- ══════════════════════════════════════
          TAB: SEASON
@@ -305,73 +393,6 @@
       </section>
 
     </div><!-- /panel-transactions -->
-
-    <!-- ══════════════════════════════════════
-         TAB: DEFENSE
-    ══════════════════════════════════════ -->
-    <div class="tab-panel" id="panel-defense" hidden>
-
-      <p class="date-range-note" id="note-defense"></p>
-
-      <div class="field-diagram">
-        <div class="field-inner">
-
-          <!-- Outfield row -->
-          <div class="field-row field-row-of">
-            <div class="pos-box pos-lf">
-              <div class="pos-label">LF</div>
-              <div class="pos-players" id="players-LF"><span class="pos-empty">—</span></div>
-            </div>
-            <div class="pos-box pos-cf">
-              <div class="pos-label">CF</div>
-              <div class="pos-players" id="players-CF"><span class="pos-empty">—</span></div>
-            </div>
-            <div class="pos-box pos-rf">
-              <div class="pos-label">RF</div>
-              <div class="pos-players" id="players-RF"><span class="pos-empty">—</span></div>
-            </div>
-          </div>
-
-          <!-- Infield row -->
-          <div class="field-row field-row-if">
-            <div class="pos-box pos-3b">
-              <div class="pos-label">3B</div>
-              <div class="pos-players" id="players-3B"><span class="pos-empty">—</span></div>
-            </div>
-            <div class="pos-box pos-ss">
-              <div class="pos-label">SS</div>
-              <div class="pos-players" id="players-SS"><span class="pos-empty">—</span></div>
-            </div>
-            <div class="pos-box pos-p">
-              <div class="pos-label">P</div>
-              <div class="pos-players" id="players-P"><span class="pos-empty">—</span></div>
-            </div>
-            <div class="pos-box pos-2b">
-              <div class="pos-label">2B</div>
-              <div class="pos-players" id="players-2B"><span class="pos-empty">—</span></div>
-            </div>
-            <div class="pos-box pos-1b">
-              <div class="pos-label">1B</div>
-              <div class="pos-players" id="players-1B"><span class="pos-empty">—</span></div>
-            </div>
-          </div>
-
-          <!-- Battery row -->
-          <div class="field-row field-row-batt">
-            <div class="pos-box pos-c">
-              <div class="pos-label">C</div>
-              <div class="pos-players" id="players-C"><span class="pos-empty">—</span></div>
-            </div>
-            <div class="pos-box pos-dh">
-              <div class="pos-label">DH</div>
-              <div class="pos-players" id="players-DH"><span class="pos-empty">—</span></div>
-            </div>
-          </div>
-
-        </div><!-- /.field-inner -->
-      </div><!-- /.field-diagram -->
-
-    </div><!-- /panel-defense -->
 
   </main>
 

@@ -347,48 +347,72 @@ export async function buildFieldingData(rosterPlayers, season = '2025') {
   const ids       = livePlayers.map(p => p.mlbId).join(',');
   const playerMap = Object.fromEntries(livePlayers.map(p => [p.mlbId, p]));
 
-  const url  = `/people?personIds=${ids}&hydrate=stats(group=fielding,type=season,season=${season})`;
-  const data = await mlbGet(url);
+  // Fetch fielding stats for each sport level in parallel
+  const levelResults = await Promise.all(
+    SPORT_LEVELS.map(async (level) => {
+      try {
+        const url = `/people?personIds=${ids}&hydrate=stats(group=fielding,type=season,season=${season},sportId=${level.id})`;
+        return await mlbGet(url);
+      } catch {
+        return { people: [] };
+      }
+    })
+  );
 
-  // positionMap[pos] = { [mlbId]: { player, maxG, maxGS } }
-  const posAgg = {}; // pos → Map<mlbId, {player, G, GS}>
+  // posAgg[pos] = Map<mlbId, { player, G, GS }>
+  // Within each level call, take max G per position (handles multi-team aggregate splits).
+  // Then SUM across levels (player may play at multiple levels in same season).
+  const posAgg = {};
 
-  for (const person of (data.people || [])) {
-    const player = playerMap[person.id];
-    if (!player) continue;
+  for (const data of levelResults) {
+    for (const person of (data.people || [])) {
+      const player = playerMap[person.id];
+      if (!player) continue;
 
-    for (const statGroup of (person.stats || [])) {
-      if (statGroup.group?.displayName !== 'fielding') continue;
+      // Find max G per position within this level's response
+      const levelPosG  = {};
+      const levelPosGS = {};
+      for (const statGroup of (person.stats || [])) {
+        if (statGroup.group?.displayName !== 'fielding') continue;
+        for (const split of (statGroup.splits || [])) {
+          const pos = split.position?.abbreviation;
+          if (!pos || pos === 'P') continue;   // exclude pitcher position
+          const g  = split.stat?.gamesPlayed  ?? 0;
+          const gs = split.stat?.gamesStarted ?? 0;
+          if (g > (levelPosG[pos] ?? -1)) {
+            levelPosG[pos]  = g;
+            levelPosGS[pos] = gs;
+          }
+        }
+      }
 
-      for (const split of (statGroup.splits || [])) {
-        const pos = split.position?.abbreviation;
-        if (!pos) continue;
-        const g  = split.stat?.gamesPlayed  ?? 0;
-        const gs = split.stat?.gamesStarted ?? 0;
-
+      // Add this level's max-G values to the running totals
+      for (const [pos, g] of Object.entries(levelPosG)) {
+        if (g === 0) continue;
         if (!posAgg[pos]) posAgg[pos] = new Map();
         const existing = posAgg[pos].get(person.id);
-        // Keep the highest G value seen (the aggregate split is the largest)
-        if (!existing || g > existing.G) {
-          posAgg[pos].set(person.id, { player, G: g, GS: gs });
-        }
+        posAgg[pos].set(person.id, {
+          player,
+          G:  (existing?.G  ?? 0) + g,
+          GS: (existing?.GS ?? 0) + (levelPosGS[pos] ?? 0),
+        });
       }
     }
   }
 
   // Convert to sorted arrays
   const result = {};
-  for (const [pos, playerMap2] of Object.entries(posAgg)) {
-    result[pos] = Array.from(playerMap2.values())
+  for (const [pos, pMap] of Object.entries(posAgg)) {
+    result[pos] = Array.from(pMap.values())
       .filter(e => e.G > 0)
       .sort((a, b) => b.G - a.G)
       .map(e => ({
-        name:      e.player.name,
-        mlbId:     e.player.mlbId,
-        bbrefId:   e.player.bbrefId    ?? null,
+        name:       e.player.name,
+        mlbId:      e.player.mlbId,
+        bbrefId:    e.player.bbrefId    ?? null,
         bbrefRegId: e.player.bbrefRegId ?? null,
-        G:         e.G,
-        GS:        e.GS,
+        G:          e.G,
+        GS:         e.GS,
       }));
   }
   return result;

@@ -13,7 +13,7 @@ import {
 import {
   hittingRowHtml, pitchingRowHtml, transactionRowHtml,
   populateTable, initSort, initFilters, applyFilters, applyTxnSearch,
-  colorizeTable, sortDefault,
+  colorizeTable, sortDefault, playerLink,
 } from './tables.js';
 
 // Last day of each completed season — used to anchor "Last 30/10 days" tabs
@@ -209,7 +209,7 @@ const PITCHING_COLOR = {
       ['tbl-season-hitting', 'tbl-season-pitching'].forEach(initSort);
       // Color-code stats, gray low-PA hitters, then apply default sort
       colorizeTable('tbl-season-hitting',  HITTING_COLOR,  5, 50);
-      colorizeTable('tbl-season-pitching', PITCHING_COLOR);
+      colorizeTable('tbl-season-pitching', PITCHING_COLOR, 6, 10);
       sortDefault('tbl-season-hitting',  9, true);   // OPS desc
       sortDefault('tbl-season-pitching', 9, true);   // SO-BB% desc
       applyFilters();
@@ -252,7 +252,7 @@ const PITCHING_COLOR = {
 
       [`tbl-${tabKey}-hitting`, `tbl-${tabKey}-pitching`].forEach(initSort);
       colorizeTable(`tbl-${tabKey}-hitting`,  HITTING_COLOR,  5, 50);
-      colorizeTable(`tbl-${tabKey}-pitching`, PITCHING_COLOR);
+      colorizeTable(`tbl-${tabKey}-pitching`, PITCHING_COLOR, 6, 10);
       sortDefault(`tbl-${tabKey}-hitting`,  9, true);
       sortDefault(`tbl-${tabKey}-pitching`, 9, true);
       applyFilters();
@@ -319,8 +319,9 @@ const PITCHING_COLOR = {
       const note = document.getElementById('note-defense');
       if (note) note.textContent = `${selectedSeason} Season`;
 
-      const POSITIONS = ['LF', 'CF', 'RF', '3B', 'SS', 'P', '2B', '1B', 'C', 'DH'];
-      for (const pos of POSITIONS) {
+      // ── Field diagram ────────────────────────────────────────────────
+      const FIELD_POSITIONS = ['LF', 'CF', 'RF', '3B', 'SS', '2B', '1B', 'C', 'DH'];
+      for (const pos of FIELD_POSITIONS) {
         const container = document.getElementById(`players-${pos}`);
         if (!container) continue;
 
@@ -336,6 +337,47 @@ const PITCHING_COLOR = {
           ).join('');
         }
       }
+
+      // ── Position table ───────────────────────────────────────────────
+      const TABLE_POSITIONS = ['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH'];
+
+      // Gather all players who appeared at any table position
+      const allPlayers = new Map(); // mlbId → { name, mlbId, bbrefId, bbrefRegId, posG:{} }
+      for (const pos of TABLE_POSITIONS) {
+        for (const p of (fieldingData[pos] ?? [])) {
+          if (!allPlayers.has(p.mlbId)) {
+            allPlayers.set(p.mlbId, {
+              name:      p.name,
+              mlbId:     p.mlbId,
+              bbrefId:   p.bbrefId,
+              bbrefRegId: p.bbrefRegId,
+              posG:      {},
+            });
+          }
+          allPlayers.get(p.mlbId).posG[pos] = p.G;
+        }
+      }
+
+      // Sort by total games across all positions
+      const playerRows = Array.from(allPlayers.values()).sort((a, b) => {
+        const aTotal = Object.values(a.posG).reduce((s, g) => s + g, 0);
+        const bTotal = Object.values(b.posG).reduce((s, g) => s + g, 0);
+        return bTotal - aTotal;
+      });
+
+      const htmlRows = playerRows.map(p => {
+        const cells = TABLE_POSITIONS.map(pos => {
+          const g = p.posG[pos];
+          return `<td class="num-col">${g != null ? g : '—'}</td>`;
+        }).join('');
+        return `<tr data-name="${p.name.toLowerCase()}">
+          <td class="player-name-cell">${playerLink(p.name, p.bbrefId, p.bbrefRegId, p.mlbId)}</td>
+          ${cells}
+        </tr>`;
+      });
+
+      populateTable('tbl-defense', htmlRows, 'No fielding data available.');
+      initSort('tbl-defense');
 
       loaded.defense = true;
     } catch (err) {
@@ -393,7 +435,7 @@ const PITCHING_COLOR = {
     });
 
     // Show/hide shared filter bar (not shown on transactions tab)
-    document.getElementById('statsFilterBar').hidden = (tabName === 'transactions' || tabName === 'defense');
+    document.getElementById('statsFilterBar').hidden = (tabName === 'transactions');
 
     // Load data for the tab
     switch (tabName) {
@@ -401,7 +443,6 @@ const PITCHING_COLOR = {
       case 'last30':       loadDateRangeTab(30, 'last30'); break;
       case 'last10':       loadDateRangeTab(10, 'last10'); break;
       case 'transactions': /* loaded on button click */ break;
-      case 'defense':      loadDefenseTab(); break;
     }
   }
 
@@ -432,6 +473,14 @@ const PITCHING_COLOR = {
   }
 
   initFilters();
+
+  // Load defense data when the Defense type filter is clicked
+  document.querySelectorAll('[data-filter="type"]').forEach(btn => {
+    if (btn.dataset.value === 'defense') {
+      btn.addEventListener('click', () => loadDefenseTab());
+    }
+  });
+
   initSeasonSelector();
   initTransactionControls();
 

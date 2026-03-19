@@ -468,3 +468,21 @@ footer {
 .pos-player-name { color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pos-player-g    { color: #777; font-size: 10.5px; flex-shrink: 0; }
 .pos-empty       { font-size: 11px; color: #aaa; display: block; text-align: center; padding: 4px 0; }
+
+.pos-mound {
+  flex: 0 0 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pos-mound::after {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #a08060 0%, #7a5c38 55%, #5a3e22 100%);
+  border: 2px solid rgba(255,255,255,0.25);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.35);
+}
