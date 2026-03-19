@@ -13,6 +13,8 @@ const SPORT_LEVELS = [
   { id: 11, abbrev: 'AAA' },
   { id: 12, abbrev: 'AA'  },
   { id: 13, abbrev: 'A+'  },
+  { id: 14, abbrev: 'A'   },
+  { id: 16, abbrev: 'Rk'  },
 ];
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -190,7 +192,12 @@ export async function buildHittingRows(rosterPlayers, statType, startDate, endDa
     const entry        = statsMap[p.mlbId];
     const s            = entry?.stat ?? null;
     const hasPlayedMlb = careerMlbSet.has(p.mlbId);
-    const currentLevel = entry?.highestLevel ?? p.level;
+    // Indy/FA players' primary affiliation is independent — don't let a
+    // brief affiliated stint override their roster classification.
+    const NON_AFFILIATED = new Set(['Indy', 'FA']);
+    const currentLevel = NON_AFFILIATED.has(p.level)
+      ? p.level
+      : (entry?.highestLevel ?? p.level);
     const careerHighestLevel = hasPlayedMlb ? 'MLB' : currentLevel;
 
     const pa = s?.plateAppearances ?? null;
@@ -243,7 +250,12 @@ export async function buildPitchingRows(rosterPlayers, statType, startDate, endD
     const entry        = statsMap[p.mlbId];
     const s            = entry?.stat ?? null;
     const hasPlayedMlb = careerMlbSet.has(p.mlbId);
-    const currentLevel = entry?.highestLevel ?? p.level;
+    // Indy/FA players' primary affiliation is independent — don't let a
+    // brief affiliated stint override their roster classification.
+    const NON_AFFILIATED = new Set(['Indy', 'FA']);
+    const currentLevel = NON_AFFILIATED.has(p.level)
+      ? p.level
+      : (entry?.highestLevel ?? p.level);
     const careerHighestLevel = hasPlayedMlb ? 'MLB' : currentLevel;
 
     const ip  = s?.inningsPitched != null ? parseFloat(s.inningsPitched) : null;

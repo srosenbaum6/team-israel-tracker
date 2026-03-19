@@ -12,6 +12,7 @@ import {
 import {
   hittingRowHtml, pitchingRowHtml, transactionRowHtml,
   populateTable, initSort, initFilters, applyFilters, applyTxnSearch,
+  colorizeTable, sortDefault,
 } from './tables.js';
 
 // Last day of each completed season — used to anchor "Last 30/10 days" tabs
@@ -19,6 +20,34 @@ import {
 const SEASON_END = {
   '2025': '2025-09-28',
   '2026': null,   // null = use today (season in progress)
+};
+
+// ── Color-coding config ────────────────────────────────────────────────────
+// Maps column index → true (higher is better / red) | false (lower is better / blue)
+// Hitting table columns: [0]Player [1]Org [2]CurLvl [3]HiLvl [4]G [5]PA
+//   [6]AVG [7]OBP [8]SLG [9]OPS [10]SO% [11]BB% [12]2B [13]3B [14]HR [15]RBI [16]SB [17]CS
+const HITTING_COLOR = {
+  6: true,   // AVG
+  7: true,   // OBP
+  8: true,   // SLG
+  9: true,   // OPS
+  10: false, // SO% (high SO% is bad for hitters)
+  11: true,  // BB%
+  12: true,  // 2B
+  13: true,  // 3B
+  14: true,  // HR
+  15: true,  // RBI
+  16: true,  // SB
+};
+
+// Pitching table columns: [0]Player [1]Org [2]CurLvl [3]HiLvl [4]G [5]GS [6]IP
+//   [7]SO% [8]BB% [9]SO-BB% [10]WHIP [11]ERA
+const PITCHING_COLOR = {
+  7: true,   // SO%
+  8: false,  // BB% (high BB% is bad)
+  9: true,   // SO-BB%
+  10: false, // WHIP
+  11: false, // ERA
 };
 
 (async function () {
@@ -170,6 +199,11 @@ const SEASON_END = {
       populateTable('tbl-season-pitching', pitchingRows.map(pitchingRowHtml), 'No pitching stats available.');
 
       ['tbl-season-hitting', 'tbl-season-pitching'].forEach(initSort);
+      // Color-code stats, gray low-PA hitters, then apply default sort
+      colorizeTable('tbl-season-hitting',  HITTING_COLOR,  5, 50);
+      colorizeTable('tbl-season-pitching', PITCHING_COLOR);
+      sortDefault('tbl-season-hitting',  9, true);   // OPS desc
+      sortDefault('tbl-season-pitching', 9, true);   // SO-BB% desc
       applyFilters();
       loaded.season = true;
     } catch (err) {
@@ -209,6 +243,10 @@ const SEASON_END = {
       populateTable(`tbl-${tabKey}-pitching`, pitchingRows.map(pitchingRowHtml), 'No pitching stats in this window.');
 
       [`tbl-${tabKey}-hitting`, `tbl-${tabKey}-pitching`].forEach(initSort);
+      colorizeTable(`tbl-${tabKey}-hitting`,  HITTING_COLOR,  5, 50);
+      colorizeTable(`tbl-${tabKey}-pitching`, PITCHING_COLOR);
+      sortDefault(`tbl-${tabKey}-hitting`,  9, true);
+      sortDefault(`tbl-${tabKey}-pitching`, 9, true);
       applyFilters();
       loaded[tabKey] = true;
     } catch (err) {
@@ -240,7 +278,9 @@ const SEASON_END = {
         description: t.description ?? '',
       }));
 
+      const rosterMlbIdSet = new Set(mlbIds);
       const allTxns = [...txns, ...manualTxns]
+        .filter(t => !t.mlbId || rosterMlbIdSet.has(t.mlbId))
         .sort((a, b) => b.date.localeCompare(a.date));
 
       populateTable(

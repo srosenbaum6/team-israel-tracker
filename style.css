@@ -313,6 +313,9 @@ main {
 .stat-table th.sort-asc::after  { content: ' ↑'; opacity: 1; }
 .stat-table th.sort-desc::after { content: ' ↓'; opacity: 1; }
 
+/* Low-PA rows: stat cells are grayed via inline opacity set by colorizeTable */
+tbody tr td { transition: background-color 0.15s ease, opacity 0.15s ease; }
+
 .stat-table tbody tr {
   border-bottom: 1px solid var(--gray-200);
   transition: background .1s;
