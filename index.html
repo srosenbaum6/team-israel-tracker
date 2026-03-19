@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Team Israel Baseball Tracker 2026</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <h1>Team Israel Baseball Tracker</h1>
+      <p class="header-sub">2026 Season &mdash; World Baseball Classic Roster</p>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ── Tab navigation ── -->
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-tab="season"       role="tab">Season</button>
+      <button class="tab"        data-tab="last30"       role="tab">Last 30 Days</button>
+      <button class="tab"        data-tab="last10"       role="tab">Last 10 Days</button>
+      <button class="tab"        data-tab="transactions" role="tab">Transactions</button>
+    </nav>
+
+    <!-- ── Shared filter bar ── -->
+    <div class="filter-bar" id="statsFilterBar">
+      <div class="filter-group">
+        <span class="filter-label">Level:</span>
+        <button class="filter-btn active" data-filter="level" data-value="all">All</button>
+        <button class="filter-btn" data-filter="level" data-value="MLB">MLB</button>
+        <button class="filter-btn" data-filter="level" data-value="MiLB">MiLB</button>
+        <button class="filter-btn" data-filter="level" data-value="Indy">Indy</button>
+        <button class="filter-btn" data-filter="level" data-value="FA">Free Agent</button>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Type:</span>
+        <button class="filter-btn active" data-filter="type" data-value="all">All</button>
+        <button class="filter-btn" data-filter="type" data-value="hitting">Hitters</button>
+        <button class="filter-btn" data-filter="type" data-value="pitching">Pitchers</button>
+      </div>
+      <div class="filter-group search-group">
+        <input type="text" id="playerSearch" placeholder="Search player..." aria-label="Search player" />
+      </div>
+    </div>
+
+    <!-- ── Loading state ── -->
+    <div id="loadingMsg" class="loading-msg" hidden>Loading stats...</div>
+    <div id="errorMsg"   class="error-msg"   hidden></div>
+
+    <!-- ══════════════════════════════════════
+         TAB: SEASON
+    ══════════════════════════════════════ -->
+    <div class="tab-panel active" id="panel-season">
+
+      <section class="stat-section" id="section-season-hitting">
+        <h2>Hitters &mdash; 2026 Season</h2>
+        <div class="table-wrapper">
+          <table class="stat-table sortable" id="tbl-season-hitting">
+            <thead>
+              <tr>
+                <th data-col="name"    class="sortable-col name-col">Player</th>
+                <th data-col="team"    class="sortable-col">Team</th>
+                <th data-col="level"   class="sortable-col">Level</th>
+                <th data-col="G"       class="sortable-col num-col">G</th>
+                <th data-col="PA"      class="sortable-col num-col">PA</th>
+                <th data-col="AB"      class="sortable-col num-col">AB</th>
+                <th data-col="H"       class="sortable-col num-col">H</th>
+                <th data-col="doubles" class="sortable-col num-col">2B</th>
+                <th data-col="triples" class="sortable-col num-col">3B</th>
+                <th data-col="HR"      class="sortable-col num-col">HR</th>
+                <th data-col="RBI"     class="sortable-col num-col">RBI</th>
+                <th data-col="BB"      class="sortable-col num-col">BB</th>
+                <th data-col="SO"      class="sortable-col num-col">SO</th>
+                <th data-col="SB"      class="sortable-col num-col">SB</th>
+                <th data-col="AVG"     class="sortable-col num-col">AVG</th>
+                <th data-col="OBP"     class="sortable-col num-col">OBP</th>
+                <th data-col="SLG"     class="sortable-col num-col">SLG</th>
+                <th data-col="OPS"     class="sortable-col num-col">OPS</th>
+              </tr>
+            </thead>
+            <tbody><tr><td colspan="18" class="empty-row">Fetching data...</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="stat-section" id="section-season-pitching">
+        <h2>Pitchers &mdash; 2026 Season</h2>
+        <div class="table-wrapper">
+          <table class="stat-table sortable" id="tbl-season-pitching">
+            <thead>
+              <tr>
+                <th data-col="name"  class="sortable-col name-col">Player</th>
+                <th data-col="team"  class="sortable-col">Team</th>
+                <th data-col="level" class="sortable-col">Level</th>
+                <th data-col="G"     class="sortable-col num-col">G</th>
+                <th data-col="GS"    class="sortable-col num-col">GS</th>
+                <th data-col="IP"    class="sortable-col num-col">IP</th>
+                <th data-col="W"     class="sortable-col num-col">W</th>
+                <th data-col="L"     class="sortable-col num-col">L</th>
+                <th data-col="H"     class="sortable-col num-col">H</th>
+                <th data-col="ER"    class="sortable-col num-col">ER</th>
+                <th data-col="BB"    class="sortable-col num-col">BB</th>
+                <th data-col="SO"    class="sortable-col num-col">SO</th>
+                <th data-col="ERA"   class="sortable-col num-col">ERA</th>
+                <th data-col="WHIP"  class="sortable-col num-col">WHIP</th>
+                <th data-col="K9"    class="sortable-col num-col">K/9</th>
+                <th data-col="BB9"   class="sortable-col num-col">BB/9</th>
+              </tr>
+            </thead>
+            <tbody><tr><td colspan="16" class="empty-row">Fetching data...</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+    </div><!-- /panel-season -->
+
+    <!-- ══════════════════════════════════════
+         TAB: LAST 30 DAYS
+    ══════════════════════════════════════ -->
+    <div class="tab-panel" id="panel-last30" hidden>
+
+      <p class="date-range-note" id="note-last30"></p>
+
+      <section class="stat-section">
+        <h2>Hitters &mdash; Last 30 Days</h2>
+        <div class="table-wrapper">
+          <table class="stat-table sortable" id="tbl-last30-hitting">
+            <thead>
+              <tr>
+                <th data-col="name"    class="sortable-col name-col">Player</th>
+                <th data-col="team"    class="sortable-col">Team</th>
+                <th data-col="level"   class="sortable-col">Level</th>
+                <th data-col="G"       class="sortable-col num-col">G</th>
+                <th data-col="PA"      class="sortable-col num-col">PA</th>
+                <th data-col="AB"      class="sortable-col num-col">AB</th>
+                <th data-col="H"       class="sortable-col num-col">H</th>
+                <th data-col="doubles" class="sortable-col num-col">2B</th>
+                <th data-col="triples" class="sortable-col num-col">3B</th>
+                <th data-col="HR"      class="sortable-col num-col">HR</th>
+                <th data-col="RBI"     class="sortable-col num-col">RBI</th>
+                <th data-col="BB"      class="sortable-col num-col">BB</th>
+                <th data-col="SO"      class="sortable-col num-col">SO</th>
+                <th data-col="SB"      class="sortable-col num-col">SB</th>
+                <th data-col="AVG"     class="sortable-col num-col">AVG</th>
+                <th data-col="OBP"     class="sortable-col num-col">OBP</th>
+                <th data-col="SLG"     class="sortable-col num-col">SLG</th>
+                <th data-col="OPS"     class="sortable-col num-col">OPS</th>
+              </tr>
+            </thead>
+            <tbody><tr><td colspan="18" class="empty-row">Click tab to load...</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="stat-section">
+        <h2>Pitchers &mdash; Last 30 Days</h2>
+        <div class="table-wrapper">
+          <table class="stat-table sortable" id="tbl-last30-pitching">
+            <thead>
+              <tr>
+                <th data-col="name"  class="sortable-col name-col">Player</th>
+                <th data-col="team"  class="sortable-col">Team</th>
+                <th data-col="level" class="sortable-col">Level</th>
+                <th data-col="G"     class="sortable-col num-col">G</th>
+                <th data-col="GS"    class="sortable-col num-col">GS</th>
+                <th data-col="IP"    class="sortable-col num-col">IP</th>
+                <th data-col="W"     class="sortable-col num-col">W</th>
+                <th data-col="L"     class="sortable-col num-col">L</th>
+                <th data-col="H"     class="sortable-col num-col">H</th>
+                <th data-col="ER"    class="sortable-col num-col">ER</th>
+                <th data-col="BB"    class="sortable-col num-col">BB</th>
+                <th data-col="SO"    class="sortable-col num-col">SO</th>
+                <th data-col="ERA"   class="sortable-col num-col">ERA</th>
+                <th data-col="WHIP"  class="sortable-col num-col">WHIP</th>
+                <th data-col="K9"    class="sortable-col num-col">K/9</th>
+                <th data-col="BB9"   class="sortable-col num-col">BB/9</th>
+              </tr>
+            </thead>
+            <tbody><tr><td colspan="16" class="empty-row">Click tab to load...</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+    </div><!-- /panel-last30 -->
+
+    <!-- ══════════════════════════════════════
+         TAB: LAST 10 DAYS
+    ══════════════════════════════════════ -->
+    <div class="tab-panel" id="panel-last10" hidden>
+
+      <p class="date-range-note" id="note-last10"></p>
+
+      <section class="stat-section">
+        <h2>Hitters &mdash; Last 10 Days</h2>
+        <div class="table-wrapper">
+          <table class="stat-table sortable" id="tbl-last10-hitting">
+            <thead>
+              <tr>
+                <th data-col="name"    class="sortable-col name-col">Player</th>
+                <th data-col="team"    class="sortable-col">Team</th>
+                <th data-col="level"   class="sortable-col">Level</th>
+                <th data-col="G"       class="sortable-col num-col">G</th>
+                <th data-col="PA"      class="sortable-col num-col">PA</th>
+                <th data-col="AB"      class="sortable-col num-col">AB</th>
+                <th data-col="H"       class="sortable-col num-col">H</th>
+                <th data-col="doubles" class="sortable-col num-col">2B</th>
+                <th data-col="triples" class="sortable-col num-col">3B</th>
+                <th data-col="HR"      class="sortable-col num-col">HR</th>
+                <th data-col="RBI"     class="sortable-col num-col">RBI</th>
+                <th data-col="BB"      class="sortable-col num-col">BB</th>
+                <th data-col="SO"      class="sortable-col num-col">SO</th>
+                <th data-col="SB"      class="sortable-col num-col">SB</th>
+                <th data-col="AVG"     class="sortable-col num-col">AVG</th>
+                <th data-col="OBP"     class="sortable-col num-col">OBP</th>
+                <th data-col="SLG"     class="sortable-col num-col">SLG</th>
+                <th data-col="OPS"     class="sortable-col num-col">OPS</th>
+              </tr>
+            </thead>
+            <tbody><tr><td colspan="18" class="empty-row">Click tab to load...</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="stat-section">
+        <h2>Pitchers &mdash; Last 10 Days</h2>
+        <div class="table-wrapper">
+          <table class="stat-table sortable" id="tbl-last10-pitching">
+            <thead>
+              <tr>
+                <th data-col="name"  class="sortable-col name-col">Player</th>
+                <th data-col="team"  class="sortable-col">Team</th>
+                <th data-col="level" class="sortable-col">Level</th>
+                <th data-col="G"     class="sortable-col num-col">G</th>
+                <th data-col="GS"    class="sortable-col num-col">GS</th>
+                <th data-col="IP"    class="sortable-col num-col">IP</th>
+                <th data-col="W"     class="sortable-col num-col">W</th>
+                <th data-col="L"     class="sortable-col num-col">L</th>
+                <th data-col="H"     class="sortable-col num-col">H</th>
+                <th data-col="ER"    class="sortable-col num-col">ER</th>
+                <th data-col="BB"    class="sortable-col num-col">BB</th>
+                <th data-col="SO"    class="sortable-col num-col">SO</th>
+                <th data-col="ERA"   class="sortable-col num-col">ERA</th>
+                <th data-col="WHIP"  class="sortable-col num-col">WHIP</th>
+                <th data-col="K9"    class="sortable-col num-col">K/9</th>
+                <th data-col="BB9"   class="sortable-col num-col">BB/9</th>
+              </tr>
+            </thead>
+            <tbody><tr><td colspan="16" class="empty-row">Click tab to load...</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+    </div><!-- /panel-last10 -->
+
+    <!-- ══════════════════════════════════════
+         TAB: TRANSACTIONS
+    ══════════════════════════════════════ -->
+    <div class="tab-panel" id="panel-transactions" hidden>
+
+      <div class="filter-bar" id="txnFilterBar">
+        <div class="filter-group search-group">
+          <input type="text" id="txnSearch" placeholder="Search transactions..." aria-label="Search transactions" />
+        </div>
+        <div class="filter-group">
+          <label for="txnStartDate" class="filter-label">From:</label>
+          <input type="date" id="txnStartDate" />
+        </div>
+        <div class="filter-group">
+          <label for="txnEndDate" class="filter-label">To:</label>
+          <input type="date" id="txnEndDate" />
+        </div>
+        <button id="txnFetchBtn" class="fetch-btn">Load Transactions</button>
+      </div>
+
+      <section class="stat-section">
+        <h2>Transaction Log</h2>
+        <div class="table-wrapper">
+          <table class="stat-table sortable" id="tbl-transactions">
+            <thead>
+              <tr>
+                <th data-col="date"       class="sortable-col">Date</th>
+                <th data-col="player"     class="sortable-col name-col">Player</th>
+                <th data-col="type"       class="sortable-col">Type</th>
+                <th data-col="fromTeam"   class="sortable-col">From</th>
+                <th data-col="toTeam"     class="sortable-col">To</th>
+                <th data-col="description" class="sortable-col desc-col">Description</th>
+              </tr>
+            </thead>
+            <tbody><tr><td colspan="6" class="empty-row">Set a date range and click Load Transactions.</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+    </div><!-- /panel-transactions -->
+
+  </main>
+
+  <footer>
+    <p>Stats sourced from <a href="https://statsapi.mlb.com" target="_blank" rel="noopener">MLB Stats API</a> and <a href="https://www.baseball-reference.com" target="_blank" rel="noopener">Baseball Reference</a>. Updated live.</p>
+    <p class="footer-note">BBRef IDs marked as unverified may link to incorrect pages. <a href="https://github.com/YOUR_USERNAME/team-israel-tracker" target="_blank" rel="noopener">Edit roster.json on GitHub</a> to correct them.</p>
+  </footer>
+
+  <!-- ES module: main.js imports api.js and tables.js internally -->
+  <script type="module" src="js/main.js"></script>
+
+</body>
+</html>

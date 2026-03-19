@@ -1,0 +1,356 @@
+/* ── Variables ─────────────────────────────────────── */
+:root {
+  --blue:       #003399;
+  --blue-light: #1a4db5;
+  --blue-pale:  #e8edfc;
+  --white:      #ffffff;
+  --gray-100:   #f5f6f8;
+  --gray-200:   #e9eaec;
+  --gray-400:   #9ca3af;
+  --gray-700:   #374151;
+  --gray-900:   #111827;
+  --red:        #dc2626;
+  --green:      #16a34a;
+  --font:       -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --radius:     6px;
+  --shadow:     0 1px 4px rgba(0,0,0,.10);
+}
+
+/* ── Reset & base ──────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  font-size: 14px;
+  background: var(--gray-100);
+  color: var(--gray-900);
+  min-height: 100vh;
+}
+
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Header ────────────────────────────────────────── */
+header {
+  background: var(--blue);
+  color: var(--white);
+  padding: 20px 24px 18px;
+  border-bottom: 4px solid #002277;
+}
+
+.header-inner { max-width: 1400px; margin: 0 auto; }
+
+header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.header-sub {
+  margin-top: 3px;
+  font-size: 13px;
+  opacity: 0.80;
+}
+
+/* ── Main layout ───────────────────────────────────── */
+main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 16px 40px;
+}
+
+/* ── Tabs ──────────────────────────────────────────── */
+.tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--gray-200);
+  border-radius: var(--radius) var(--radius) 0 0;
+  padding: 6px 6px 0;
+  margin-top: 20px;
+  border-bottom: 2px solid var(--blue);
+}
+
+.tab {
+  padding: 8px 22px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius) var(--radius) 0 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-700);
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+
+.tab:hover { background: var(--white); color: var(--blue); }
+
+.tab.active {
+  background: var(--white);
+  color: var(--blue);
+  font-weight: 700;
+  border-bottom: 2px solid var(--white);
+  margin-bottom: -2px;
+}
+
+/* ── Filter bar ────────────────────────────────────── */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  background: var(--white);
+  padding: 10px 16px;
+  border: 1px solid var(--gray-200);
+  border-top: none;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.filter-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.filter-btn {
+  padding: 4px 12px;
+  border: 1px solid var(--gray-200);
+  border-radius: 20px;
+  background: var(--white);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--gray-700);
+  transition: background .12s, color .12s, border-color .12s;
+}
+
+.filter-btn:hover { border-color: var(--blue); color: var(--blue); }
+
+.filter-btn.active {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: var(--white);
+}
+
+.search-group input {
+  padding: 5px 12px;
+  border: 1px solid var(--gray-200);
+  border-radius: 20px;
+  font-size: 13px;
+  width: 200px;
+  outline: none;
+  transition: border-color .15s;
+}
+
+.search-group input:focus { border-color: var(--blue); }
+
+/* Transaction-tab filter bar */
+#txnFilterBar {
+  border-top: 1px solid var(--gray-200);
+}
+
+#txnFilterBar input[type="date"] {
+  padding: 5px 10px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  font-size: 13px;
+  outline: none;
+}
+
+#txnFilterBar input[type="date"]:focus { border-color: var(--blue); }
+
+.fetch-btn {
+  padding: 6px 18px;
+  background: var(--blue);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+}
+.fetch-btn:hover { background: var(--blue-light); }
+
+/* ── Loading / error ───────────────────────────────── */
+.loading-msg {
+  text-align: center;
+  padding: 24px;
+  color: var(--gray-400);
+  font-style: italic;
+}
+
+.error-msg {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: var(--red);
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  margin: 12px 0;
+  font-size: 13px;
+}
+
+/* ── Tab panels ────────────────────────────────────── */
+.tab-panel {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-top: none;
+}
+
+.tab-panel[hidden] { display: none; }
+
+/* ── Stat section ──────────────────────────────────── */
+.stat-section {
+  padding: 20px 16px 8px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.stat-section:last-child { border-bottom: none; }
+
+.stat-section h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--blue);
+  margin-bottom: 12px;
+}
+
+.date-range-note {
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--gray-400);
+  font-style: italic;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+/* ── Tables ────────────────────────────────────────── */
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-200);
+  margin-bottom: 12px;
+}
+
+.stat-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.stat-table thead {
+  background: var(--blue);
+  color: var(--white);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.stat-table th {
+  padding: 8px 10px;
+  font-weight: 600;
+  text-align: left;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  user-select: none;
+}
+
+.stat-table th.num-col { text-align: right; }
+
+.stat-table th.sortable-col {
+  cursor: pointer;
+}
+
+.stat-table th.sortable-col::after {
+  content: ' ⇅';
+  font-size: 10px;
+  opacity: 0.5;
+}
+
+.stat-table th.sort-asc::after  { content: ' ↑'; opacity: 1; }
+.stat-table th.sort-desc::after { content: ' ↓'; opacity: 1; }
+
+.stat-table tbody tr {
+  border-bottom: 1px solid var(--gray-200);
+  transition: background .1s;
+}
+
+.stat-table tbody tr:last-child { border-bottom: none; }
+.stat-table tbody tr:nth-child(even) { background: var(--gray-100); }
+.stat-table tbody tr:hover { background: var(--blue-pale); }
+
+.stat-table tbody tr[hidden] { display: none; }
+
+.stat-table td {
+  padding: 7px 10px;
+  color: var(--gray-900);
+}
+
+.stat-table td.num-col { text-align: right; font-variant-numeric: tabular-nums; }
+
+.empty-row {
+  text-align: center;
+  color: var(--gray-400);
+  font-style: italic;
+  padding: 20px !important;
+}
+
+/* ── Player name cell ──────────────────────────────── */
+.player-name-cell {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.player-name-cell a {
+  color: var(--gray-900);
+}
+
+.player-name-cell a:hover { color: var(--blue); }
+
+/* ── Level badges ──────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.badge-MLB  { background: #dbeafe; color: #1d4ed8; }
+.badge-MiLB { background: #dcfce7; color: #15803d; }
+.badge-Indy { background: #fef3c7; color: #92400e; }
+.badge-FA   { background: var(--gray-200); color: var(--gray-700); }
+.badge-Other { background: #f3e8ff; color: #6b21a8; }
+
+/* ── Transaction table specifics ──────────────────── */
+.desc-col { white-space: normal; min-width: 260px; }
+
+/* ── Footer ────────────────────────────────────────── */
+footer {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px;
+  font-size: 12px;
+  color: var(--gray-400);
+  line-height: 1.7;
+}
+
+.footer-note { margin-top: 4px; }
+
+/* ── Responsive ────────────────────────────────────── */
+@media (max-width: 640px) {
+  header { padding: 14px 12px; }
+  header h1 { font-size: 18px; }
+  .tab { padding: 7px 14px; font-size: 13px; }
+  .filter-bar { padding: 8px 12px; }
+  .search-group input { width: 150px; }
+  .stat-section { padding: 14px 8px 6px; }
+}

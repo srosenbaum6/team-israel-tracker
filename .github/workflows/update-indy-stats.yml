@@ -1,0 +1,39 @@
+name: Update Indy Stats
+
+on:
+  schedule:
+    # Run daily at 8 AM UTC (4 AM ET / 1 AM PT)
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+    # Allow manual trigger from GitHub Actions tab
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # needed to commit updated JSON
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4 pandas lxml
+
+      - name: Run scraper
+        run: python scripts/scrape_indy.py
+
+      - name: Commit updated stats
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/indy_stats.json
+          # Only commit if there are changes
+          git diff --cached --quiet || git commit -m "chore: update indy stats [skip ci]"
+          git push
