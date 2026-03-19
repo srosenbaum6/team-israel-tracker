@@ -13,7 +13,7 @@ import {
 import {
   hittingRowHtml, pitchingRowHtml, transactionRowHtml,
   populateTable, initSort, initFilters, applyFilters, applyTxnSearch,
-  colorizeTable, sortDefault, playerLink,
+  colorizeTable, sortDefault, playerLink, handColorStyle,
 } from './tables.js';
 
 // Last day of each completed season — used to anchor "Last 30/10 days" tabs
@@ -332,7 +332,7 @@ const PITCHING_COLOR = {
         } else {
           container.innerHTML = players.map((p, i) =>
             `<div class="pos-player${i === 0 ? ' pos-starter' : ''}">
-              <span class="pos-player-name">${p.name}</span>
+              <span class="pos-player-name" style="${handColorStyle(p.bats)}">${p.name}</span>
               <span class="pos-player-g">${p.G}G</span>
             </div>`
           ).join('');
@@ -352,6 +352,7 @@ const PITCHING_COLOR = {
               mlbId:     p.mlbId,
               bbrefId:   p.bbrefId,
               bbrefRegId: p.bbrefRegId,
+              bats:      p.bats ?? null,
               posG:      {},
             });
           }
@@ -372,7 +373,7 @@ const PITCHING_COLOR = {
           return `<td class="num-col">${g != null ? g : '—'}</td>`;
         }).join('');
         return `<tr data-name="${p.name.toLowerCase()}">
-          <td class="player-name-cell">${playerLink(p.name, p.bbrefId, p.bbrefRegId, p.mlbId)}</td>
+          <td class="player-name-cell" style="${handColorStyle(p.bats)}">${playerLink(p.name, p.bbrefId, p.bbrefRegId, p.mlbId)}</td>
           ${cells}
         </tr>`;
       });

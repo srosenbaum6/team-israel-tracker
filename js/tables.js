@@ -34,6 +34,16 @@ function fmtPct(val) {
   return (val * 100).toFixed(1) + '%';
 }
 
+/**
+ * Returns an inline style string for player name color-coding by hand.
+ * Black (default) = R, Red = L, Blue = S (switch hitters only).
+ */
+export function handColorStyle(hand) {
+  if (hand === 'L') return 'color:#c0392b';   // left-handed → red
+  if (hand === 'S') return 'color:#1a6bbf';   // switch hitter → blue
+  return '';                                    // right-handed / unknown → black
+}
+
 function levelBadge(level) {
   if (!level) return '<span class="badge badge-Other">—</span>';
   const cls = {
@@ -75,7 +85,7 @@ export function playerLink(name, bbrefId, bbrefRegId, mlbId) {
 export function hittingRowHtml(row) {
   return `
     <tr data-current-level="${row.currentLevel ?? ''}" data-highest-level="${row.careerHighestLevel ?? ''}" data-type="hitting" data-name="${row.name.toLowerCase()}">
-      <td class="player-name-cell">${playerLink(row.name, row.bbrefId, row.bbrefRegId, row.mlbId)}</td>
+      <td class="player-name-cell" style="${handColorStyle(row.bats)}">${playerLink(row.name, row.bbrefId, row.bbrefRegId, row.mlbId)}</td>
       <td>${row.team}</td>
       <td>${levelBadge(row.currentLevel)}</td>
       <td>${levelBadge(row.careerHighestLevel)}</td>
@@ -103,7 +113,7 @@ export function hittingRowHtml(row) {
 export function pitchingRowHtml(row) {
   return `
     <tr data-current-level="${row.currentLevel ?? ''}" data-highest-level="${row.careerHighestLevel ?? ''}" data-type="pitching" data-name="${row.name.toLowerCase()}">
-      <td class="player-name-cell">${playerLink(row.name, row.bbrefId, row.bbrefRegId, row.mlbId)}</td>
+      <td class="player-name-cell" style="${handColorStyle(row.throws)}">${playerLink(row.name, row.bbrefId, row.bbrefRegId, row.mlbId)}</td>
       <td>${row.team}</td>
       <td>${levelBadge(row.currentLevel)}</td>
       <td>${levelBadge(row.careerHighestLevel)}</td>

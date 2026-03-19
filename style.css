@@ -348,7 +348,7 @@ tbody tr td { transition: background-color 0.15s ease, opacity 0.15s ease; }
 }
 
 .player-name-cell a {
-  color: var(--gray-900);
+  color: inherit;   /* inherits hand-color from the <td> inline style */
 }
 
 .player-name-cell a:hover { color: var(--blue); }

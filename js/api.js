@@ -158,6 +158,22 @@ async function fetchMlbStats(playerIds, group, statType, startDate, endDate, sea
  * Check which players have ever appeared in an MLB game (career stats at sportId=1).
  * Returns a Set of mlbIds.
  */
+// Fetch batting/throwing hand from player bio (no hydrate needed — bio is always returned)
+async function fetchPlayerBios(playerIds) {
+  if (!playerIds.length) return {};
+  try {
+    const data = await mlbGet(`/people?personIds=${playerIds.join(',')}`);
+    return Object.fromEntries(
+      (data.people || []).map(p => [p.id, {
+        bats:   p.batSide?.code   ?? null,   // 'R', 'L', or 'S' (switch)
+        throws: p.pitchHand?.code ?? null,   // 'R' or 'L'
+      }])
+    );
+  } catch {
+    return {};
+  }
+}
+
 async function fetchCareerMlbPlayers(playerIds, group) {
   if (!playerIds.length) return new Set();
   const ids = playerIds.join(',');
@@ -183,9 +199,10 @@ export async function buildHittingRows(rosterPlayers, statType, startDate, endDa
   const livePlayers = rosterPlayers.filter(p => p.positionGroup === 'hitting' && p.mlbId);
   const liveIds = livePlayers.map(p => p.mlbId);
 
-  const [statsMap, careerMlbSet] = await Promise.all([
+  const [statsMap, careerMlbSet, bioMap] = await Promise.all([
     fetchMlbStats(liveIds, 'hitting', statType, startDate, endDate, season),
     fetchCareerMlbPlayers(liveIds, 'hitting'),
+    fetchPlayerBios(liveIds),
   ]);
 
   const rows = livePlayers.map(p => {
@@ -207,6 +224,7 @@ export async function buildHittingRows(rosterPlayers, statType, startDate, endDa
     return {
       mlbId:             p.mlbId,
       name:              p.name,
+      bats:              bioMap[p.mlbId]?.bats ?? p.bats ?? null,
       // Only link to the MLB BBRef player page if they've actually played in MLB
       bbrefId:           hasPlayedMlb ? (p.bbrefId ?? null) : null,
       bbrefRegId:        p.bbrefRegId ?? null,
@@ -241,9 +259,10 @@ export async function buildPitchingRows(rosterPlayers, statType, startDate, endD
   const livePlayers = rosterPlayers.filter(p => p.positionGroup === 'pitching' && p.mlbId);
   const liveIds = livePlayers.map(p => p.mlbId);
 
-  const [statsMap, careerMlbSet] = await Promise.all([
+  const [statsMap, careerMlbSet, bioMap] = await Promise.all([
     fetchMlbStats(liveIds, 'pitching', statType, startDate, endDate, season),
     fetchCareerMlbPlayers(liveIds, 'pitching'),
+    fetchPlayerBios(liveIds),
   ]);
 
   const rows = livePlayers.map(p => {
@@ -275,6 +294,7 @@ export async function buildPitchingRows(rosterPlayers, statType, startDate, endD
     return {
       mlbId:             p.mlbId,
       name:              p.name,
+      throws:            bioMap[p.mlbId]?.throws ?? p.throws ?? null,
       bbrefId:           hasPlayedMlb ? (p.bbrefId ?? null) : null,
       bbrefRegId:        p.bbrefRegId ?? null,
       team:              p.team,
@@ -363,11 +383,17 @@ export async function buildFieldingData(rosterPlayers, season = '2025') {
   // Within each level call, take max G per position (handles multi-team aggregate splits).
   // Then SUM across levels (player may play at multiple levels in same season).
   const posAgg = {};
+  // Capture batSide from any API response (bio is always included)
+  const batsMap = {};
 
   for (const data of levelResults) {
     for (const person of (data.people || [])) {
       const player = playerMap[person.id];
       if (!player) continue;
+      // Grab batSide the first time we see this player
+      if (!batsMap[person.id] && person.batSide?.code) {
+        batsMap[person.id] = person.batSide.code;
+      }
 
       // Find max G per position within this level's response
       const levelPosG  = {};
@@ -411,6 +437,7 @@ export async function buildFieldingData(rosterPlayers, season = '2025') {
         mlbId:      e.player.mlbId,
         bbrefId:    e.player.bbrefId    ?? null,
         bbrefRegId: e.player.bbrefRegId ?? null,
+        bats:       batsMap[e.player.mlbId] ?? e.player.bats ?? null,
         G:          e.G,
         GS:         e.GS,
       }));
