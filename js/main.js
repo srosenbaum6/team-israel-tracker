@@ -317,7 +317,8 @@ const PITCHING_COLOR = {
       const fieldingData = await buildFieldingData(roster, selectedSeason);
 
       const note = document.getElementById('note-defense');
-      if (note) note.textContent = `${selectedSeason} Season`;
+      if (note) note.innerHTML =
+        `${selectedSeason} Season &mdash; <em>Affiliated games only (MLB &amp; MiLB). Independent/Indy league games are not reflected here.</em>`;
 
       // ── Field diagram ────────────────────────────────────────────────
       const FIELD_POSITIONS = ['LF', 'CF', 'RF', '3B', 'SS', '2B', '1B', 'C', 'DH'];
@@ -419,6 +420,11 @@ const PITCHING_COLOR = {
         // Reload the currently active tab
         const activeTab = document.querySelector('.tab.active')?.dataset.tab ?? 'season';
         switchTab(activeTab);
+
+        // If Defense type is currently selected, reload defense data for the new season
+        const defenseTypeActive = document.querySelector('[data-filter="type"][data-value="defense"]')
+          ?.classList.contains('active');
+        if (defenseTypeActive) loadDefenseTab();
       });
     });
   }

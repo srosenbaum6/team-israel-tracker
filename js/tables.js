@@ -317,15 +317,19 @@ export function applyFilters() {
   const defenseView = document.getElementById('defense-view');
 
   if (typeVal === 'defense') {
-    // Show defense view; hide all regular stat sections
+    // Show defense view; hide stat sections that are NOT inside #defense-view
     if (defenseView) defenseView.hidden = false;
-    document.querySelectorAll('.stat-section').forEach(s => { s.hidden = true; });
+    document.querySelectorAll('.stat-section').forEach(s => {
+      if (!s.closest('#defense-view')) s.hidden = true;
+    });
     return;
   }
 
-  // Non-defense: hide defense view, restore stat sections
+  // Non-defense: hide defense view, restore all stat sections
   if (defenseView) defenseView.hidden = true;
-  document.querySelectorAll('.stat-section').forEach(s => { s.hidden = false; });
+  document.querySelectorAll('.stat-section').forEach(s => {
+    if (!s.closest('#defense-view')) s.hidden = false;
+  });
 
   document.querySelectorAll('.stat-table').forEach(table => {
     if (table.id === 'tbl-transactions' || table.id === 'tbl-defense') return;
