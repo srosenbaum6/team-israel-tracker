@@ -7,13 +7,6 @@
 
 const MLB_API = 'https://statsapi.mlb.com/api/v1';
 
-// The last day of the 2025 MLB regular season — used to anchor date-range
-// tabs when the 2025 season is selected.
-export const SEASON_END = {
-  '2025': '2025-09-28',
-  '2026': null,   // null = use today's date (season in progress)
-};
-
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 function fmt(val, decimals = 3) {
@@ -165,7 +158,7 @@ export async function buildPitchingRows(rosterPlayers, statType, startDate, endD
       team:     p.team,
       level:    p.level,
       positionGroup: 'pitching',
-      G:        s?.gamesPitched ?? null,
+      G:        s?.gamesPlayed ?? null,
       GS:       s?.gamesStarted ?? null,
       IP:       ip,
       W:        s?.wins ?? null,

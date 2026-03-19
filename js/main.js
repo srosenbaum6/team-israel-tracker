@@ -6,13 +6,20 @@
  */
 
 import {
-  buildHittingRows, buildPitchingRows, fetchTransactions, dateNDaysAgo, today, SEASON_END,
+  buildHittingRows, buildPitchingRows, fetchTransactions, dateNDaysAgo, today,
 } from './api.js';
 
 import {
   hittingRowHtml, pitchingRowHtml, transactionRowHtml,
   populateTable, initSort, initFilters, applyFilters, applyTxnSearch,
 } from './tables.js';
+
+// Last day of each completed season — used to anchor "Last 30/10 days" tabs
+// so they show the final stretch of that season rather than days from today.
+const SEASON_END = {
+  '2025': '2025-09-28',
+  '2026': null,   // null = use today (season in progress)
+};
 
 (async function () {
 
