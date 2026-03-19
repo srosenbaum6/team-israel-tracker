@@ -89,11 +89,13 @@ const SEASON_END = {
 
   function buildStaticHittingRows(source) {
     return (source?.hitting ?? []).map(p => ({
-      mlbId:    p.playerId ?? null,
-      name:     p.playerName,
-      bbrefId:  p.bbrefId ?? null,
-      team:     p.team,
-      level:    p.level,
+      mlbId:        p.playerId  ?? null,
+      name:         p.playerName,
+      bbrefId:      p.bbrefId   ?? null,
+      bbrefRegId:   p.bbrefRegId ?? null,
+      team:         p.team,
+      orgLevel:     p.level,
+      highestLevel: p.level,
       positionGroup: 'hitting',
       G:        p.stats?.G       ?? null,
       PA:       p.stats?.PA      ?? null,
@@ -115,11 +117,13 @@ const SEASON_END = {
 
   function buildStaticPitchingRows(source) {
     return (source?.pitching ?? []).map(p => ({
-      mlbId:    p.playerId ?? null,
-      name:     p.playerName,
-      bbrefId:  p.bbrefId ?? null,
-      team:     p.team,
-      level:    p.level,
+      mlbId:        p.playerId  ?? null,
+      name:         p.playerName,
+      bbrefId:      p.bbrefId   ?? null,
+      bbrefRegId:   p.bbrefRegId ?? null,
+      team:         p.team,
+      orgLevel:     p.level,
+      highestLevel: p.level,
       positionGroup: 'pitching',
       G:        p.stats?.G    ?? null,
       GS:       p.stats?.GS   ?? null,

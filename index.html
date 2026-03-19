@@ -35,12 +35,21 @@
     <!-- ── Shared filter bar ── -->
     <div class="filter-bar" id="statsFilterBar">
       <div class="filter-group">
-        <span class="filter-label">Level:</span>
-        <button class="filter-btn active" data-filter="level" data-value="all">All</button>
-        <button class="filter-btn" data-filter="level" data-value="MLB">MLB</button>
-        <button class="filter-btn" data-filter="level" data-value="MiLB">MiLB</button>
-        <button class="filter-btn" data-filter="level" data-value="Indy">Indy</button>
-        <button class="filter-btn" data-filter="level" data-value="FA">Free Agent</button>
+        <span class="filter-label">Org:</span>
+        <button class="filter-btn active" data-filter="orgLevel" data-value="all">All</button>
+        <button class="filter-btn" data-filter="orgLevel" data-value="MLB">MLB</button>
+        <button class="filter-btn" data-filter="orgLevel" data-value="MiLB">MiLB</button>
+        <button class="filter-btn" data-filter="orgLevel" data-value="Indy">Indy</button>
+        <button class="filter-btn" data-filter="orgLevel" data-value="FA">FA</button>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Played:</span>
+        <button class="filter-btn active" data-filter="playedLevel" data-value="all">All</button>
+        <button class="filter-btn" data-filter="playedLevel" data-value="MLB">MLB</button>
+        <button class="filter-btn" data-filter="playedLevel" data-value="AAA">AAA</button>
+        <button class="filter-btn" data-filter="playedLevel" data-value="AA">AA</button>
+        <button class="filter-btn" data-filter="playedLevel" data-value="A+">A+</button>
+        <button class="filter-btn" data-filter="playedLevel" data-value="Indy">Indy</button>
       </div>
       <div class="filter-group">
         <span class="filter-label">Type:</span>
@@ -68,27 +77,30 @@
           <table class="stat-table sortable" id="tbl-season-hitting">
             <thead>
               <tr>
-                <th data-col="name"    class="sortable-col name-col">Player</th>
-                <th data-col="team"    class="sortable-col">Team</th>
-                <th data-col="level"   class="sortable-col">Level</th>
-                <th data-col="G"       class="sortable-col num-col">G</th>
-                <th data-col="PA"      class="sortable-col num-col">PA</th>
-                <th data-col="AB"      class="sortable-col num-col">AB</th>
-                <th data-col="H"       class="sortable-col num-col">H</th>
-                <th data-col="doubles" class="sortable-col num-col">2B</th>
-                <th data-col="triples" class="sortable-col num-col">3B</th>
-                <th data-col="HR"      class="sortable-col num-col">HR</th>
-                <th data-col="RBI"     class="sortable-col num-col">RBI</th>
-                <th data-col="BB"      class="sortable-col num-col">BB</th>
-                <th data-col="SO"      class="sortable-col num-col">SO</th>
-                <th data-col="SB"      class="sortable-col num-col">SB</th>
-                <th data-col="AVG"     class="sortable-col num-col">AVG</th>
-                <th data-col="OBP"     class="sortable-col num-col">OBP</th>
-                <th data-col="SLG"     class="sortable-col num-col">SLG</th>
-                <th data-col="OPS"     class="sortable-col num-col">OPS</th>
+                <th data-col="name"        class="sortable-col name-col">Player</th>
+                <th data-col="team"        class="sortable-col">Team</th>
+                <th data-col="orgLevel"    class="sortable-col">Org</th>
+                <th data-col="highestLevel" class="sortable-col">Played</th>
+                <th data-col="G"           class="sortable-col num-col">G</th>
+                <th data-col="PA"          class="sortable-col num-col">PA</th>
+                <th data-col="AB"          class="sortable-col num-col">AB</th>
+                <th data-col="H"           class="sortable-col num-col">H</th>
+                <th data-col="doubles"     class="sortable-col num-col">2B</th>
+                <th data-col="triples"     class="sortable-col num-col">3B</th>
+                <th data-col="HR"          class="sortable-col num-col">HR</th>
+                <th data-col="RBI"         class="sortable-col num-col">RBI</th>
+                <th data-col="BB"          class="sortable-col num-col">BB</th>
+                <th data-col="SO"          class="sortable-col num-col">SO</th>
+                <th data-col="SB"          class="sortable-col num-col">SB</th>
+                <th data-col="AVG"         class="sortable-col num-col">AVG</th>
+                <th data-col="OBP"         class="sortable-col num-col">OBP</th>
+                <th data-col="SLG"         class="sortable-col num-col">SLG</th>
+                <th data-col="OPS"         class="sortable-col num-col">OPS</th>
+                <th data-col="SOPct"       class="sortable-col num-col">SO%</th>
+                <th data-col="BBPct"       class="sortable-col num-col">BB%</th>
               </tr>
             </thead>
-            <tbody><tr><td colspan="18" class="empty-row">Fetching data...</td></tr></tbody>
+            <tbody><tr><td colspan="21" class="empty-row">Fetching data...</td></tr></tbody>
           </table>
         </div>
       </section>
@@ -99,25 +111,26 @@
           <table class="stat-table sortable" id="tbl-season-pitching">
             <thead>
               <tr>
-                <th data-col="name"  class="sortable-col name-col">Player</th>
-                <th data-col="team"  class="sortable-col">Team</th>
-                <th data-col="level" class="sortable-col">Level</th>
-                <th data-col="G"     class="sortable-col num-col">G</th>
-                <th data-col="GS"    class="sortable-col num-col">GS</th>
-                <th data-col="IP"    class="sortable-col num-col">IP</th>
-                <th data-col="W"     class="sortable-col num-col">W</th>
-                <th data-col="L"     class="sortable-col num-col">L</th>
-                <th data-col="H"     class="sortable-col num-col">H</th>
-                <th data-col="ER"    class="sortable-col num-col">ER</th>
-                <th data-col="BB"    class="sortable-col num-col">BB</th>
-                <th data-col="SO"    class="sortable-col num-col">SO</th>
-                <th data-col="ERA"   class="sortable-col num-col">ERA</th>
-                <th data-col="WHIP"  class="sortable-col num-col">WHIP</th>
-                <th data-col="K9"    class="sortable-col num-col">K/9</th>
-                <th data-col="BB9"   class="sortable-col num-col">BB/9</th>
+                <th data-col="name"         class="sortable-col name-col">Player</th>
+                <th data-col="team"         class="sortable-col">Team</th>
+                <th data-col="orgLevel"     class="sortable-col">Org</th>
+                <th data-col="highestLevel" class="sortable-col">Played</th>
+                <th data-col="G"            class="sortable-col num-col">G</th>
+                <th data-col="GS"           class="sortable-col num-col">GS</th>
+                <th data-col="IP"           class="sortable-col num-col">IP</th>
+                <th data-col="W"            class="sortable-col num-col">W</th>
+                <th data-col="L"            class="sortable-col num-col">L</th>
+                <th data-col="H"            class="sortable-col num-col">H</th>
+                <th data-col="ER"           class="sortable-col num-col">ER</th>
+                <th data-col="BB"           class="sortable-col num-col">BB</th>
+                <th data-col="SO"           class="sortable-col num-col">SO</th>
+                <th data-col="ERA"          class="sortable-col num-col">ERA</th>
+                <th data-col="WHIP"         class="sortable-col num-col">WHIP</th>
+                <th data-col="K9"           class="sortable-col num-col">K/9</th>
+                <th data-col="BB9"          class="sortable-col num-col">BB/9</th>
               </tr>
             </thead>
-            <tbody><tr><td colspan="16" class="empty-row">Fetching data...</td></tr></tbody>
+            <tbody><tr><td colspan="17" class="empty-row">Fetching data...</td></tr></tbody>
           </table>
         </div>
       </section>
@@ -137,27 +150,30 @@
           <table class="stat-table sortable" id="tbl-last30-hitting">
             <thead>
               <tr>
-                <th data-col="name"    class="sortable-col name-col">Player</th>
-                <th data-col="team"    class="sortable-col">Team</th>
-                <th data-col="level"   class="sortable-col">Level</th>
-                <th data-col="G"       class="sortable-col num-col">G</th>
-                <th data-col="PA"      class="sortable-col num-col">PA</th>
-                <th data-col="AB"      class="sortable-col num-col">AB</th>
-                <th data-col="H"       class="sortable-col num-col">H</th>
-                <th data-col="doubles" class="sortable-col num-col">2B</th>
-                <th data-col="triples" class="sortable-col num-col">3B</th>
-                <th data-col="HR"      class="sortable-col num-col">HR</th>
-                <th data-col="RBI"     class="sortable-col num-col">RBI</th>
-                <th data-col="BB"      class="sortable-col num-col">BB</th>
-                <th data-col="SO"      class="sortable-col num-col">SO</th>
-                <th data-col="SB"      class="sortable-col num-col">SB</th>
-                <th data-col="AVG"     class="sortable-col num-col">AVG</th>
-                <th data-col="OBP"     class="sortable-col num-col">OBP</th>
-                <th data-col="SLG"     class="sortable-col num-col">SLG</th>
-                <th data-col="OPS"     class="sortable-col num-col">OPS</th>
+                <th data-col="name"        class="sortable-col name-col">Player</th>
+                <th data-col="team"        class="sortable-col">Team</th>
+                <th data-col="orgLevel"    class="sortable-col">Org</th>
+                <th data-col="highestLevel" class="sortable-col">Played</th>
+                <th data-col="G"           class="sortable-col num-col">G</th>
+                <th data-col="PA"          class="sortable-col num-col">PA</th>
+                <th data-col="AB"          class="sortable-col num-col">AB</th>
+                <th data-col="H"           class="sortable-col num-col">H</th>
+                <th data-col="doubles"     class="sortable-col num-col">2B</th>
+                <th data-col="triples"     class="sortable-col num-col">3B</th>
+                <th data-col="HR"          class="sortable-col num-col">HR</th>
+                <th data-col="RBI"         class="sortable-col num-col">RBI</th>
+                <th data-col="BB"          class="sortable-col num-col">BB</th>
+                <th data-col="SO"          class="sortable-col num-col">SO</th>
+                <th data-col="SB"          class="sortable-col num-col">SB</th>
+                <th data-col="AVG"         class="sortable-col num-col">AVG</th>
+                <th data-col="OBP"         class="sortable-col num-col">OBP</th>
+                <th data-col="SLG"         class="sortable-col num-col">SLG</th>
+                <th data-col="OPS"         class="sortable-col num-col">OPS</th>
+                <th data-col="SOPct"       class="sortable-col num-col">SO%</th>
+                <th data-col="BBPct"       class="sortable-col num-col">BB%</th>
               </tr>
             </thead>
-            <tbody><tr><td colspan="18" class="empty-row">Click tab to load...</td></tr></tbody>
+            <tbody><tr><td colspan="21" class="empty-row">Click tab to load...</td></tr></tbody>
           </table>
         </div>
       </section>
@@ -168,25 +184,26 @@
           <table class="stat-table sortable" id="tbl-last30-pitching">
             <thead>
               <tr>
-                <th data-col="name"  class="sortable-col name-col">Player</th>
-                <th data-col="team"  class="sortable-col">Team</th>
-                <th data-col="level" class="sortable-col">Level</th>
-                <th data-col="G"     class="sortable-col num-col">G</th>
-                <th data-col="GS"    class="sortable-col num-col">GS</th>
-                <th data-col="IP"    class="sortable-col num-col">IP</th>
-                <th data-col="W"     class="sortable-col num-col">W</th>
-                <th data-col="L"     class="sortable-col num-col">L</th>
-                <th data-col="H"     class="sortable-col num-col">H</th>
-                <th data-col="ER"    class="sortable-col num-col">ER</th>
-                <th data-col="BB"    class="sortable-col num-col">BB</th>
-                <th data-col="SO"    class="sortable-col num-col">SO</th>
-                <th data-col="ERA"   class="sortable-col num-col">ERA</th>
-                <th data-col="WHIP"  class="sortable-col num-col">WHIP</th>
-                <th data-col="K9"    class="sortable-col num-col">K/9</th>
-                <th data-col="BB9"   class="sortable-col num-col">BB/9</th>
+                <th data-col="name"         class="sortable-col name-col">Player</th>
+                <th data-col="team"         class="sortable-col">Team</th>
+                <th data-col="orgLevel"     class="sortable-col">Org</th>
+                <th data-col="highestLevel" class="sortable-col">Played</th>
+                <th data-col="G"            class="sortable-col num-col">G</th>
+                <th data-col="GS"           class="sortable-col num-col">GS</th>
+                <th data-col="IP"           class="sortable-col num-col">IP</th>
+                <th data-col="W"            class="sortable-col num-col">W</th>
+                <th data-col="L"            class="sortable-col num-col">L</th>
+                <th data-col="H"            class="sortable-col num-col">H</th>
+                <th data-col="ER"           class="sortable-col num-col">ER</th>
+                <th data-col="BB"           class="sortable-col num-col">BB</th>
+                <th data-col="SO"           class="sortable-col num-col">SO</th>
+                <th data-col="ERA"          class="sortable-col num-col">ERA</th>
+                <th data-col="WHIP"         class="sortable-col num-col">WHIP</th>
+                <th data-col="K9"           class="sortable-col num-col">K/9</th>
+                <th data-col="BB9"          class="sortable-col num-col">BB/9</th>
               </tr>
             </thead>
-            <tbody><tr><td colspan="16" class="empty-row">Click tab to load...</td></tr></tbody>
+            <tbody><tr><td colspan="17" class="empty-row">Click tab to load...</td></tr></tbody>
           </table>
         </div>
       </section>
@@ -206,27 +223,30 @@
           <table class="stat-table sortable" id="tbl-last10-hitting">
             <thead>
               <tr>
-                <th data-col="name"    class="sortable-col name-col">Player</th>
-                <th data-col="team"    class="sortable-col">Team</th>
-                <th data-col="level"   class="sortable-col">Level</th>
-                <th data-col="G"       class="sortable-col num-col">G</th>
-                <th data-col="PA"      class="sortable-col num-col">PA</th>
-                <th data-col="AB"      class="sortable-col num-col">AB</th>
-                <th data-col="H"       class="sortable-col num-col">H</th>
-                <th data-col="doubles" class="sortable-col num-col">2B</th>
-                <th data-col="triples" class="sortable-col num-col">3B</th>
-                <th data-col="HR"      class="sortable-col num-col">HR</th>
-                <th data-col="RBI"     class="sortable-col num-col">RBI</th>
-                <th data-col="BB"      class="sortable-col num-col">BB</th>
-                <th data-col="SO"      class="sortable-col num-col">SO</th>
-                <th data-col="SB"      class="sortable-col num-col">SB</th>
-                <th data-col="AVG"     class="sortable-col num-col">AVG</th>
-                <th data-col="OBP"     class="sortable-col num-col">OBP</th>
-                <th data-col="SLG"     class="sortable-col num-col">SLG</th>
-                <th data-col="OPS"     class="sortable-col num-col">OPS</th>
+                <th data-col="name"        class="sortable-col name-col">Player</th>
+                <th data-col="team"        class="sortable-col">Team</th>
+                <th data-col="orgLevel"    class="sortable-col">Org</th>
+                <th data-col="highestLevel" class="sortable-col">Played</th>
+                <th data-col="G"           class="sortable-col num-col">G</th>
+                <th data-col="PA"          class="sortable-col num-col">PA</th>
+                <th data-col="AB"          class="sortable-col num-col">AB</th>
+                <th data-col="H"           class="sortable-col num-col">H</th>
+                <th data-col="doubles"     class="sortable-col num-col">2B</th>
+                <th data-col="triples"     class="sortable-col num-col">3B</th>
+                <th data-col="HR"          class="sortable-col num-col">HR</th>
+                <th data-col="RBI"         class="sortable-col num-col">RBI</th>
+                <th data-col="BB"          class="sortable-col num-col">BB</th>
+                <th data-col="SO"          class="sortable-col num-col">SO</th>
+                <th data-col="SB"          class="sortable-col num-col">SB</th>
+                <th data-col="AVG"         class="sortable-col num-col">AVG</th>
+                <th data-col="OBP"         class="sortable-col num-col">OBP</th>
+                <th data-col="SLG"         class="sortable-col num-col">SLG</th>
+                <th data-col="OPS"         class="sortable-col num-col">OPS</th>
+                <th data-col="SOPct"       class="sortable-col num-col">SO%</th>
+                <th data-col="BBPct"       class="sortable-col num-col">BB%</th>
               </tr>
             </thead>
-            <tbody><tr><td colspan="18" class="empty-row">Click tab to load...</td></tr></tbody>
+            <tbody><tr><td colspan="21" class="empty-row">Click tab to load...</td></tr></tbody>
           </table>
         </div>
       </section>
@@ -237,25 +257,26 @@
           <table class="stat-table sortable" id="tbl-last10-pitching">
             <thead>
               <tr>
-                <th data-col="name"  class="sortable-col name-col">Player</th>
-                <th data-col="team"  class="sortable-col">Team</th>
-                <th data-col="level" class="sortable-col">Level</th>
-                <th data-col="G"     class="sortable-col num-col">G</th>
-                <th data-col="GS"    class="sortable-col num-col">GS</th>
-                <th data-col="IP"    class="sortable-col num-col">IP</th>
-                <th data-col="W"     class="sortable-col num-col">W</th>
-                <th data-col="L"     class="sortable-col num-col">L</th>
-                <th data-col="H"     class="sortable-col num-col">H</th>
-                <th data-col="ER"    class="sortable-col num-col">ER</th>
-                <th data-col="BB"    class="sortable-col num-col">BB</th>
-                <th data-col="SO"    class="sortable-col num-col">SO</th>
-                <th data-col="ERA"   class="sortable-col num-col">ERA</th>
-                <th data-col="WHIP"  class="sortable-col num-col">WHIP</th>
-                <th data-col="K9"    class="sortable-col num-col">K/9</th>
-                <th data-col="BB9"   class="sortable-col num-col">BB/9</th>
+                <th data-col="name"         class="sortable-col name-col">Player</th>
+                <th data-col="team"         class="sortable-col">Team</th>
+                <th data-col="orgLevel"     class="sortable-col">Org</th>
+                <th data-col="highestLevel" class="sortable-col">Played</th>
+                <th data-col="G"            class="sortable-col num-col">G</th>
+                <th data-col="GS"           class="sortable-col num-col">GS</th>
+                <th data-col="IP"           class="sortable-col num-col">IP</th>
+                <th data-col="W"            class="sortable-col num-col">W</th>
+                <th data-col="L"            class="sortable-col num-col">L</th>
+                <th data-col="H"            class="sortable-col num-col">H</th>
+                <th data-col="ER"           class="sortable-col num-col">ER</th>
+                <th data-col="BB"           class="sortable-col num-col">BB</th>
+                <th data-col="SO"           class="sortable-col num-col">SO</th>
+                <th data-col="ERA"          class="sortable-col num-col">ERA</th>
+                <th data-col="WHIP"         class="sortable-col num-col">WHIP</th>
+                <th data-col="K9"           class="sortable-col num-col">K/9</th>
+                <th data-col="BB9"          class="sortable-col num-col">BB/9</th>
               </tr>
             </thead>
-            <tbody><tr><td colspan="16" class="empty-row">Click tab to load...</td></tr></tbody>
+            <tbody><tr><td colspan="17" class="empty-row">Click tab to load...</td></tr></tbody>
           </table>
         </div>
       </section>

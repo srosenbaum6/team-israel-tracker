@@ -2,7 +2,8 @@
  * tables.js — Table rendering, sorting, and filtering
  */
 
-const BBREF_BASE = 'https://www.baseball-reference.com/players';
+const BBREF_BASE     = 'https://www.baseball-reference.com/players';
+const BBREF_REG_BASE = 'https://www.baseball-reference.com/register/player.fcgi';
 
 // ── Display helpers ────────────────────────────────────────────────────────
 
@@ -14,46 +15,70 @@ function fmt(val, decimals) {
   return n.toFixed(decimals);
 }
 
+function fmtPct(val) {
+  if (val == null) return '—';
+  return (val * 100).toFixed(1) + '%';
+}
+
 function levelBadge(level) {
+  if (!level) return '<span class="badge badge-Other">—</span>';
   const cls = {
-    MLB:   'badge-MLB',
-    MiLB:  'badge-MiLB',
-    Indy:  'badge-Indy',
-    FA:    'badge-FA',
+    MLB:  'badge-MLB',
+    AAA:  'badge-AAA',
+    AA:   'badge-AA',
+    'A+': 'badge-Aplus',
+    A:    'badge-A',
+    MiLB: 'badge-MiLB',
+    Indy: 'badge-Indy',
+    FA:   'badge-FA',
   }[level] || 'badge-Other';
   return `<span class="badge ${cls}">${level}</span>`;
 }
 
-function playerLink(name, bbrefId) {
-  if (!bbrefId) return `<span>${name}</span>`;
-  const letter = bbrefId[0];
-  const href = `${BBREF_BASE}/${letter}/${bbrefId}.shtml`;
-  return `<a href="${href}" target="_blank" rel="noopener">${name}</a>`;
+/**
+ * Build a player name link.
+ * Prefers the MLB BBRef player page (bbrefId), falls back to the
+ * BBRef register page (bbrefRegId) for minor-league-only players.
+ */
+function playerLink(name, bbrefId, bbrefRegId) {
+  if (bbrefId) {
+    const letter = bbrefId[0];
+    const href = `${BBREF_BASE}/${letter}/${bbrefId}.shtml`;
+    return `<a href="${href}" target="_blank" rel="noopener">${name}</a>`;
+  }
+  if (bbrefRegId) {
+    const href = `${BBREF_REG_BASE}?id=${bbrefRegId}`;
+    return `<a href="${href}" target="_blank" rel="noopener">${name}</a>`;
+  }
+  return `<span>${name}</span>`;
 }
 
 // ── Hitting row → HTML ─────────────────────────────────────────────────────
 
 export function hittingRowHtml(row) {
   return `
-    <tr data-level="${row.level}" data-type="hitting" data-name="${row.name.toLowerCase()}">
-      <td class="player-name-cell">${playerLink(row.name, row.bbrefId)}</td>
+    <tr data-org-level="${row.orgLevel ?? ''}" data-played-level="${row.highestLevel ?? ''}" data-type="hitting" data-name="${row.name.toLowerCase()}">
+      <td class="player-name-cell">${playerLink(row.name, row.bbrefId, row.bbrefRegId)}</td>
       <td>${row.team}</td>
-      <td>${levelBadge(row.level)}</td>
-      <td class="num-col">${row.G   ?? '—'}</td>
-      <td class="num-col">${row.PA  ?? '—'}</td>
-      <td class="num-col">${row.AB  ?? '—'}</td>
-      <td class="num-col">${row.H   ?? '—'}</td>
+      <td>${levelBadge(row.orgLevel)}</td>
+      <td>${levelBadge(row.highestLevel)}</td>
+      <td class="num-col">${row.G       ?? '—'}</td>
+      <td class="num-col">${row.PA      ?? '—'}</td>
+      <td class="num-col">${row.AB      ?? '—'}</td>
+      <td class="num-col">${row.H       ?? '—'}</td>
       <td class="num-col">${row.doubles ?? '—'}</td>
       <td class="num-col">${row.triples ?? '—'}</td>
-      <td class="num-col">${row.HR  ?? '—'}</td>
-      <td class="num-col">${row.RBI ?? '—'}</td>
-      <td class="num-col">${row.BB  ?? '—'}</td>
-      <td class="num-col">${row.SO  ?? '—'}</td>
-      <td class="num-col">${row.SB  ?? '—'}</td>
+      <td class="num-col">${row.HR      ?? '—'}</td>
+      <td class="num-col">${row.RBI     ?? '—'}</td>
+      <td class="num-col">${row.BB      ?? '—'}</td>
+      <td class="num-col">${row.SO      ?? '—'}</td>
+      <td class="num-col">${row.SB      ?? '—'}</td>
       <td class="num-col">${fmt(row.AVG, 3)}</td>
       <td class="num-col">${fmt(row.OBP, 3)}</td>
       <td class="num-col">${fmt(row.SLG, 3)}</td>
       <td class="num-col">${fmt(row.OPS, 3)}</td>
+      <td class="num-col">${fmtPct(row.SOPct)}</td>
+      <td class="num-col">${fmtPct(row.BBPct)}</td>
     </tr>`.trim();
 }
 
@@ -61,10 +86,11 @@ export function hittingRowHtml(row) {
 
 export function pitchingRowHtml(row) {
   return `
-    <tr data-level="${row.level}" data-type="pitching" data-name="${row.name.toLowerCase()}">
-      <td class="player-name-cell">${playerLink(row.name, row.bbrefId)}</td>
+    <tr data-org-level="${row.orgLevel ?? ''}" data-played-level="${row.highestLevel ?? ''}" data-type="pitching" data-name="${row.name.toLowerCase()}">
+      <td class="player-name-cell">${playerLink(row.name, row.bbrefId, row.bbrefRegId)}</td>
       <td>${row.team}</td>
-      <td>${levelBadge(row.level)}</td>
+      <td>${levelBadge(row.orgLevel)}</td>
+      <td>${levelBadge(row.highestLevel)}</td>
       <td class="num-col">${row.G   ?? '—'}</td>
       <td class="num-col">${row.GS  ?? '—'}</td>
       <td class="num-col">${row.IP  != null ? parseFloat(row.IP).toFixed(1) : '—'}</td>
@@ -84,13 +110,14 @@ export function pitchingRowHtml(row) {
 // ── Transaction row → HTML ─────────────────────────────────────────────────
 
 export function transactionRowHtml(txn, rosterMap) {
-  const player = rosterMap[txn.mlbId];
-  const bbrefId = player?.bbrefId ?? null;
+  const player  = rosterMap[txn.mlbId];
+  const bbrefId    = player?.bbrefId    ?? null;
+  const bbrefRegId = player?.bbrefRegId ?? null;
   const displayDate = txn.date ? txn.date.slice(0, 10) : '—';
   return `
     <tr data-name="${txn.player.toLowerCase()}">
       <td>${displayDate}</td>
-      <td class="player-name-cell">${playerLink(txn.player, bbrefId)}</td>
+      <td class="player-name-cell">${playerLink(txn.player, bbrefId, bbrefRegId)}</td>
       <td>${txn.type}</td>
       <td>${txn.fromTeam}</td>
       <td>${txn.toTeam}</td>
@@ -115,9 +142,6 @@ export function populateTable(tableId, htmlRows, emptyMessage = 'No data availab
 
 // ── Sorting ────────────────────────────────────────────────────────────────
 
-/**
- * Attach click-to-sort to every <th class="sortable-col"> in the table.
- */
 export function initSort(tableId) {
   const table = document.getElementById(tableId);
   if (!table) return;
@@ -125,9 +149,7 @@ export function initSort(tableId) {
   table.querySelectorAll('th.sortable-col').forEach((th, colIndex) => {
     th.addEventListener('click', () => {
       const isDesc = th.classList.contains('sort-desc');
-      // Reset all headers
       table.querySelectorAll('th').forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
-      // Set this header
       th.classList.add(isDesc ? 'sort-asc' : 'sort-desc');
       sortTableByColumn(table, colIndex, !isDesc);
     });
@@ -136,13 +158,12 @@ export function initSort(tableId) {
 
 function sortTableByColumn(table, colIndex, descending) {
   const tbody = table.querySelector('tbody');
-  const rows = Array.from(tbody.querySelectorAll('tr:not([hidden])'));
+  const rows  = Array.from(tbody.querySelectorAll('tr:not([hidden])'));
 
   rows.sort((a, b) => {
     const aText = a.cells[colIndex]?.textContent.trim() ?? '';
     const bText = b.cells[colIndex]?.textContent.trim() ?? '';
 
-    // Put '—' at the bottom regardless of sort direction
     if (aText === '—' && bText === '—') return 0;
     if (aText === '—') return 1;
     if (bText === '—') return -1;
@@ -155,42 +176,36 @@ function sortTableByColumn(table, colIndex, descending) {
     return descending ? -cmp : cmp;
   });
 
-  // Re-append in sorted order
   rows.forEach(r => tbody.appendChild(r));
 }
 
 // ── Filtering ──────────────────────────────────────────────────────────────
 
-/**
- * Apply level + type + search filters to all visible stat tables.
- * Reads current filter state from the DOM.
- */
 export function applyFilters() {
-  const levelVal  = document.querySelector('[data-filter="level"].active')?.dataset.value ?? 'all';
-  const typeVal   = document.querySelector('[data-filter="type"].active')?.dataset.value  ?? 'all';
+  const orgVal    = document.querySelector('[data-filter="orgLevel"].active')?.dataset.value    ?? 'all';
+  const playedVal = document.querySelector('[data-filter="playedLevel"].active')?.dataset.value ?? 'all';
+  const typeVal   = document.querySelector('[data-filter="type"].active')?.dataset.value         ?? 'all';
   const searchVal = (document.getElementById('playerSearch')?.value ?? '').toLowerCase().trim();
 
   document.querySelectorAll('.stat-table').forEach(table => {
-    // Skip transaction table — it has its own search
     if (table.id === 'tbl-transactions') return;
 
     table.querySelectorAll('tbody tr').forEach(row => {
-      const rowLevel  = row.dataset.level ?? '';
-      const rowType   = row.dataset.type  ?? '';
-      const rowName   = row.dataset.name  ?? '';
+      const rowOrg    = row.dataset.orgLevel    ?? '';
+      const rowPlayed = row.dataset.playedLevel ?? '';
+      const rowType   = row.dataset.type        ?? '';
+      const rowName   = row.dataset.name        ?? '';
 
-      const levelOk  = levelVal  === 'all' || rowLevel === levelVal;
-      const typeOk   = typeVal   === 'all' || rowType  === typeVal;
+      const orgOk    = orgVal    === 'all' || rowOrg    === orgVal;
+      const playedOk = playedVal === 'all' || rowPlayed === playedVal;
+      const typeOk   = typeVal   === 'all' || rowType   === typeVal;
       const searchOk = !searchVal || rowName.includes(searchVal);
 
-      row.hidden = !(levelOk && typeOk && searchOk);
+      row.hidden = !(orgOk && playedOk && typeOk && searchOk);
     });
   });
 }
 
-/**
- * Filter the transaction table by player name search.
- */
 export function applyTxnSearch(searchVal) {
   const q = searchVal.toLowerCase().trim();
   document.querySelectorAll('#tbl-transactions tbody tr').forEach(row => {
@@ -199,10 +214,7 @@ export function applyTxnSearch(searchVal) {
   });
 }
 
-// ── Wire up shared filter controls ────────────────────────────────────────
-
 export function initFilters() {
-  // Level / type toggle buttons
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const group = btn.dataset.filter;
@@ -212,15 +224,9 @@ export function initFilters() {
     });
   });
 
-  // Player search input
   const searchInput = document.getElementById('playerSearch');
-  if (searchInput) {
-    searchInput.addEventListener('input', applyFilters);
-  }
+  if (searchInput) searchInput.addEventListener('input', applyFilters);
 
-  // Transaction search input
   const txnSearch = document.getElementById('txnSearch');
-  if (txnSearch) {
-    txnSearch.addEventListener('input', () => applyTxnSearch(txnSearch.value));
-  }
+  if (txnSearch) txnSearch.addEventListener('input', () => applyTxnSearch(txnSearch.value));
 }

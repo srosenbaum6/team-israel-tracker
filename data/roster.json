@@ -270,7 +270,7 @@
       "position": "INF",
       "positionGroup": "hitting",
       "team": "St. Louis Cardinals",
-      "level": "MLB",
+      "level": "MiLB",
       "mlbId": 702331,
       "bbrefId": "mendlno01",
       "bbrefRegId": null,
@@ -358,8 +358,8 @@
       "team": "Toronto Blue Jays",
       "level": "MLB",
       "mlbId": 702302,
-      "bbrefId": "schrerj01",
-      "bbrefRegId": null,
+      "bbrefId": null,
+      "bbrefRegId": "schrec000rj-",
       "bbrefIdVerified": false,
       "bats": "L"
     }

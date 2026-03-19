@@ -365,6 +365,10 @@ main {
 .badge-Indy { background: #fef3c7; color: #92400e; }
 .badge-FA   { background: var(--gray-200); color: var(--gray-700); }
 .badge-Other { background: #f3e8ff; color: #6b21a8; }
+.badge-AAA   { background: #6366f1; color: #fff; }
+.badge-AA    { background: #8b5cf6; color: #fff; }
+.badge-Aplus { background: #a78bfa; color: #fff; }
+.badge-A     { background: #c4b5fd; color: #1e1b4b; }
 
 /* ── Transaction table specifics ──────────────────── */
 .desc-col { white-space: normal; min-width: 260px; }
