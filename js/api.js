@@ -328,3 +328,68 @@ export async function fetchTransactions(mlbIds, startDate, endDate) {
   txns.sort((a, b) => b.date.localeCompare(a.date));
   return txns;
 }
+
+// ── Fielding / Defense ─────────────────────────────────────────────────────
+
+/**
+ * Fetch season fielding stats for all roster players with an mlbId.
+ * Returns a map of position abbreviation → array of player entries
+ * sorted by games played descending.
+ *
+ * When a player appears in multiple splits for the same position
+ * (multi-team season), we take the maximum G value — which corresponds
+ * to the season-aggregate split the API includes alongside per-team splits.
+ */
+export async function buildFieldingData(rosterPlayers, season = '2025') {
+  const livePlayers = rosterPlayers.filter(p => p.mlbId);
+  if (!livePlayers.length) return {};
+
+  const ids       = livePlayers.map(p => p.mlbId).join(',');
+  const playerMap = Object.fromEntries(livePlayers.map(p => [p.mlbId, p]));
+
+  const url  = `/people?personIds=${ids}&hydrate=stats(group=fielding,type=season,season=${season})`;
+  const data = await mlbGet(url);
+
+  // positionMap[pos] = { [mlbId]: { player, maxG, maxGS } }
+  const posAgg = {}; // pos → Map<mlbId, {player, G, GS}>
+
+  for (const person of (data.people || [])) {
+    const player = playerMap[person.id];
+    if (!player) continue;
+
+    for (const statGroup of (person.stats || [])) {
+      if (statGroup.group?.displayName !== 'fielding') continue;
+
+      for (const split of (statGroup.splits || [])) {
+        const pos = split.position?.abbreviation;
+        if (!pos) continue;
+        const g  = split.stat?.gamesPlayed  ?? 0;
+        const gs = split.stat?.gamesStarted ?? 0;
+
+        if (!posAgg[pos]) posAgg[pos] = new Map();
+        const existing = posAgg[pos].get(person.id);
+        // Keep the highest G value seen (the aggregate split is the largest)
+        if (!existing || g > existing.G) {
+          posAgg[pos].set(person.id, { player, G: g, GS: gs });
+        }
+      }
+    }
+  }
+
+  // Convert to sorted arrays
+  const result = {};
+  for (const [pos, playerMap2] of Object.entries(posAgg)) {
+    result[pos] = Array.from(playerMap2.values())
+      .filter(e => e.G > 0)
+      .sort((a, b) => b.G - a.G)
+      .map(e => ({
+        name:      e.player.name,
+        mlbId:     e.player.mlbId,
+        bbrefId:   e.player.bbrefId    ?? null,
+        bbrefRegId: e.player.bbrefRegId ?? null,
+        G:         e.G,
+        GS:        e.GS,
+      }));
+  }
+  return result;
+}

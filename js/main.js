@@ -6,7 +6,8 @@
  */
 
 import {
-  buildHittingRows, buildPitchingRows, fetchTransactions, dateNDaysAgo, today,
+  buildHittingRows, buildPitchingRows, fetchTransactions, buildFieldingData,
+  dateNDaysAgo, today,
 } from './api.js';
 
 import {
@@ -63,7 +64,7 @@ const PITCHING_COLOR = {
 
   // Track which tabs have already been loaded to avoid redundant API calls
   // Reset whenever the season changes
-  let loaded = { season: false, last30: false, last10: false, transactions: false };
+  let loaded = { season: false, last30: false, last10: false, transactions: false, defense: false };
 
   // Returns the "anchor" end-date for date-range tabs.
   // For past seasons, use the known season-end date; for current, use today.
@@ -198,6 +199,13 @@ const PITCHING_COLOR = {
       populateTable('tbl-season-hitting',  hittingRows.map(hittingRowHtml),  'No hitting stats available.');
       populateTable('tbl-season-pitching', pitchingRows.map(pitchingRowHtml), 'No pitching stats available.');
 
+      // Update section headings to reflect the selected season
+      const yr = selectedSeason;
+      const hitH2 = document.querySelector('#section-season-hitting h2');
+      const pitH2 = document.querySelector('#section-season-pitching h2');
+      if (hitH2) hitH2.textContent = `Hitters \u2014 ${yr}`;
+      if (pitH2) pitH2.textContent = `Pitchers \u2014 ${yr}`;
+
       ['tbl-season-hitting', 'tbl-season-pitching'].forEach(initSort);
       // Color-code stats, gray low-PA hitters, then apply default sort
       colorizeTable('tbl-season-hitting',  HITTING_COLOR,  5, 50);
@@ -281,6 +289,7 @@ const PITCHING_COLOR = {
       const rosterMlbIdSet = new Set(mlbIds);
       const allTxns = [...txns, ...manualTxns]
         .filter(t => !t.mlbId || rosterMlbIdSet.has(t.mlbId))
+        .filter(t => t.player && t.player.trim() !== '')
         .sort((a, b) => b.date.localeCompare(a.date));
 
       populateTable(
@@ -294,6 +303,43 @@ const PITCHING_COLOR = {
       if (txnSearch?.value) applyTxnSearch(txnSearch.value);
     } catch (err) {
       showError(`Failed to load transactions: ${err.message}`);
+      console.error(err);
+    } finally {
+      showLoading(false);
+    }
+  }
+
+  async function loadDefenseTab() {
+    if (loaded.defense) return;
+    showLoading(true);
+    showError('');
+    try {
+      const fieldingData = await buildFieldingData(roster, selectedSeason);
+
+      const note = document.getElementById('note-defense');
+      if (note) note.textContent = `${selectedSeason} Season`;
+
+      const POSITIONS = ['LF', 'CF', 'RF', '3B', 'SS', 'P', '2B', '1B', 'C', 'DH'];
+      for (const pos of POSITIONS) {
+        const container = document.getElementById(`players-${pos}`);
+        if (!container) continue;
+
+        const players = fieldingData[pos] ?? [];
+        if (!players.length) {
+          container.innerHTML = '<span class="pos-empty">—</span>';
+        } else {
+          container.innerHTML = players.map((p, i) =>
+            `<div class="pos-player${i === 0 ? ' pos-starter' : ''}">
+              <span class="pos-player-name">${p.name}</span>
+              <span class="pos-player-g">${p.G}G</span>
+            </div>`
+          ).join('');
+        }
+      }
+
+      loaded.defense = true;
+    } catch (err) {
+      showError(`Failed to load fielding stats: ${err.message}`);
       console.error(err);
     } finally {
       showLoading(false);
@@ -315,7 +361,7 @@ const PITCHING_COLOR = {
         );
 
         // Reset all loaded flags so tabs re-fetch for the new season
-        loaded = { season: false, last30: false, last10: false, transactions: false };
+        loaded = { season: false, last30: false, last10: false, transactions: false, defense: false };
 
         // Update transactions default date range to match season
         const startInput = document.getElementById('txnStartDate');
@@ -347,7 +393,7 @@ const PITCHING_COLOR = {
     });
 
     // Show/hide shared filter bar (not shown on transactions tab)
-    document.getElementById('statsFilterBar').hidden = (tabName === 'transactions');
+    document.getElementById('statsFilterBar').hidden = (tabName === 'transactions' || tabName === 'defense');
 
     // Load data for the tab
     switch (tabName) {
@@ -355,6 +401,7 @@ const PITCHING_COLOR = {
       case 'last30':       loadDateRangeTab(30, 'last30'); break;
       case 'last10':       loadDateRangeTab(10, 'last10'); break;
       case 'transactions': /* loaded on button click */ break;
+      case 'defense':      loadDefenseTab(); break;
     }
   }
 

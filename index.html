@@ -30,6 +30,7 @@
       <button class="tab"        data-tab="last30"       role="tab">Last 30 Days</button>
       <button class="tab"        data-tab="last10"       role="tab">Last 10 Days</button>
       <button class="tab"        data-tab="transactions" role="tab">Transactions</button>
+      <button class="tab"        data-tab="defense"      role="tab">Defense</button>
     </nav>
 
     <!-- ── Shared filter bar ── -->
@@ -74,7 +75,7 @@
     <div class="tab-panel active" id="panel-season">
 
       <section class="stat-section" id="section-season-hitting">
-        <h2>Hitters &mdash; 2026 Season</h2>
+        <h2>Hitters</h2>
         <div class="table-wrapper">
           <table class="stat-table sortable" id="tbl-season-hitting">
             <thead>
@@ -105,7 +106,7 @@
       </section>
 
       <section class="stat-section" id="section-season-pitching">
-        <h2>Pitchers &mdash; 2026 Season</h2>
+        <h2>Pitchers</h2>
         <div class="table-wrapper">
           <table class="stat-table sortable" id="tbl-season-pitching">
             <thead>
@@ -268,7 +269,10 @@
 
       <div class="filter-bar" id="txnFilterBar">
         <div class="filter-group search-group">
-          <input type="text" id="txnSearch" placeholder="Search transactions..." aria-label="Search transactions" />
+          <input type="text" id="txnSearch" placeholder="Search player..." aria-label="Search player" />
+        </div>
+        <div class="filter-group search-group">
+          <input type="text" id="txnTypeSearch" placeholder="Filter type..." aria-label="Filter transaction type" />
         </div>
         <div class="filter-group">
           <label for="txnStartDate" class="filter-label">From:</label>
@@ -301,6 +305,73 @@
       </section>
 
     </div><!-- /panel-transactions -->
+
+    <!-- ══════════════════════════════════════
+         TAB: DEFENSE
+    ══════════════════════════════════════ -->
+    <div class="tab-panel" id="panel-defense" hidden>
+
+      <p class="date-range-note" id="note-defense"></p>
+
+      <div class="field-diagram">
+        <div class="field-inner">
+
+          <!-- Outfield row -->
+          <div class="field-row field-row-of">
+            <div class="pos-box pos-lf">
+              <div class="pos-label">LF</div>
+              <div class="pos-players" id="players-LF"><span class="pos-empty">—</span></div>
+            </div>
+            <div class="pos-box pos-cf">
+              <div class="pos-label">CF</div>
+              <div class="pos-players" id="players-CF"><span class="pos-empty">—</span></div>
+            </div>
+            <div class="pos-box pos-rf">
+              <div class="pos-label">RF</div>
+              <div class="pos-players" id="players-RF"><span class="pos-empty">—</span></div>
+            </div>
+          </div>
+
+          <!-- Infield row -->
+          <div class="field-row field-row-if">
+            <div class="pos-box pos-3b">
+              <div class="pos-label">3B</div>
+              <div class="pos-players" id="players-3B"><span class="pos-empty">—</span></div>
+            </div>
+            <div class="pos-box pos-ss">
+              <div class="pos-label">SS</div>
+              <div class="pos-players" id="players-SS"><span class="pos-empty">—</span></div>
+            </div>
+            <div class="pos-box pos-p">
+              <div class="pos-label">P</div>
+              <div class="pos-players" id="players-P"><span class="pos-empty">—</span></div>
+            </div>
+            <div class="pos-box pos-2b">
+              <div class="pos-label">2B</div>
+              <div class="pos-players" id="players-2B"><span class="pos-empty">—</span></div>
+            </div>
+            <div class="pos-box pos-1b">
+              <div class="pos-label">1B</div>
+              <div class="pos-players" id="players-1B"><span class="pos-empty">—</span></div>
+            </div>
+          </div>
+
+          <!-- Battery row -->
+          <div class="field-row field-row-batt">
+            <div class="pos-box pos-c">
+              <div class="pos-label">C</div>
+              <div class="pos-players" id="players-C"><span class="pos-empty">—</span></div>
+            </div>
+            <div class="pos-box pos-dh">
+              <div class="pos-label">DH</div>
+              <div class="pos-players" id="players-DH"><span class="pos-empty">—</span></div>
+            </div>
+          </div>
+
+        </div><!-- /.field-inner -->
+      </div><!-- /.field-diagram -->
+
+    </div><!-- /panel-defense -->
 
   </main>
 

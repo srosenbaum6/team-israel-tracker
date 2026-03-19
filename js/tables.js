@@ -54,15 +54,16 @@ function levelBadge(level) {
  * Uses the MLB BBRef player page (bbrefId) for players who have appeared in MLB.
  * Falls back to the BBRef register page (bbrefRegId) for minor-league-only players.
  */
-function playerLink(name, bbrefId, bbrefRegId) {
+function playerLink(name, bbrefId, bbrefRegId, mlbId) {
   if (bbrefId) {
     const letter = bbrefId[0];
-    const href = `${BBREF_BASE}/${letter}/${bbrefId}.shtml`;
-    return `<a href="${href}" target="_blank" rel="noopener">${name}</a>`;
+    return `<a href="${BBREF_BASE}/${letter}/${bbrefId}.shtml" target="_blank" rel="noopener">${name}</a>`;
   }
   if (bbrefRegId) {
-    const href = `${BBREF_REG_BASE}?id=${bbrefRegId}`;
-    return `<a href="${href}" target="_blank" rel="noopener">${name}</a>`;
+    return `<a href="${BBREF_REG_BASE}?id=${bbrefRegId}" target="_blank" rel="noopener">${name}</a>`;
+  }
+  if (mlbId) {
+    return `<a href="https://www.mlb.com/player/${mlbId}" target="_blank" rel="noopener">${name}</a>`;
   }
   return `<span>${name}</span>`;
 }
@@ -74,7 +75,7 @@ function playerLink(name, bbrefId, bbrefRegId) {
 export function hittingRowHtml(row) {
   return `
     <tr data-current-level="${row.currentLevel ?? ''}" data-highest-level="${row.careerHighestLevel ?? ''}" data-type="hitting" data-name="${row.name.toLowerCase()}">
-      <td class="player-name-cell">${playerLink(row.name, row.bbrefId, row.bbrefRegId)}</td>
+      <td class="player-name-cell">${playerLink(row.name, row.bbrefId, row.bbrefRegId, row.mlbId)}</td>
       <td>${row.team}</td>
       <td>${levelBadge(row.currentLevel)}</td>
       <td>${levelBadge(row.careerHighestLevel)}</td>
@@ -102,7 +103,7 @@ export function hittingRowHtml(row) {
 export function pitchingRowHtml(row) {
   return `
     <tr data-current-level="${row.currentLevel ?? ''}" data-highest-level="${row.careerHighestLevel ?? ''}" data-type="pitching" data-name="${row.name.toLowerCase()}">
-      <td class="player-name-cell">${playerLink(row.name, row.bbrefId, row.bbrefRegId)}</td>
+      <td class="player-name-cell">${playerLink(row.name, row.bbrefId, row.bbrefRegId, row.mlbId)}</td>
       <td>${row.team}</td>
       <td>${levelBadge(row.currentLevel)}</td>
       <td>${levelBadge(row.careerHighestLevel)}</td>
@@ -127,7 +128,7 @@ export function transactionRowHtml(txn, rosterMap) {
   return `
     <tr data-name="${txn.player.toLowerCase()}">
       <td>${displayDate}</td>
-      <td class="player-name-cell">${playerLink(txn.player, bbrefId, bbrefRegId)}</td>
+      <td class="player-name-cell">${playerLink(txn.player, bbrefId, bbrefRegId, txn.mlbId)}</td>
       <td>${txn.type}</td>
       <td>${txn.fromTeam}</td>
       <td>${txn.toTeam}</td>
@@ -195,22 +196,22 @@ function sortTableByColumn(table, colIndex, descending) {
 
 function getRankColor(value, min, max, higherIsBetter) {
   if (min === max) return '';
-  const ratio      = (value - min) / (max - min);   // 0 = min val, 1 = max val
-  const goodRatio  = higherIsBetter ? ratio : 1 - ratio; // 0 = worst, 1 = best
+  const ratio     = (value - min) / (max - min);
+  const goodRatio = higherIsBetter ? ratio : 1 - ratio;
 
   let r, g, b;
   if (goodRatio >= 0.5) {
-    // White → light red (good)
+    // White → blue (good)
     const t = (goodRatio - 0.5) * 2;
-    r = 255;
+    r = Math.round(255 - t * 90);
     g = Math.round(255 - t * 90);
-    b = Math.round(255 - t * 90);
-  } else {
-    // Light blue → white (bad)
-    const t = goodRatio * 2;
-    r = Math.round(165 + t * 90);
-    g = Math.round(165 + t * 90);
     b = 255;
+  } else {
+    // Red → white (bad)
+    const t = goodRatio * 2;
+    r = 255;
+    g = Math.round(165 + t * 90);
+    b = Math.round(165 + t * 90);
   }
   return `rgb(${r},${g},${b})`;
 }
@@ -332,11 +333,15 @@ export function applyFilters() {
   });
 }
 
-export function applyTxnSearch(searchVal) {
-  const q = searchVal.toLowerCase().trim();
+export function applyTxnSearch(nameVal = '', typeVal = '') {
+  const q  = nameVal.toLowerCase().trim();
+  const tq = typeVal.toLowerCase().trim();
   document.querySelectorAll('#tbl-transactions tbody tr').forEach(row => {
-    const name = row.dataset.name ?? '';
-    row.hidden = q ? !name.includes(q) : false;
+    const name = (row.dataset.name ?? '').toLowerCase();
+    const type = (row.cells[2]?.textContent ?? '').toLowerCase();
+    const nameOk = !q  || name.includes(q);
+    const typeOk = !tq || type.includes(tq);
+    row.hidden = !(nameOk && typeOk);
   });
 }
 
@@ -353,6 +358,10 @@ export function initFilters() {
   const searchInput = document.getElementById('playerSearch');
   if (searchInput) searchInput.addEventListener('input', applyFilters);
 
-  const txnSearch = document.getElementById('txnSearch');
-  if (txnSearch) txnSearch.addEventListener('input', () => applyTxnSearch(txnSearch.value));
+  const txnSearch     = document.getElementById('txnSearch');
+  const txnTypeSearch = document.getElementById('txnTypeSearch');
+  const getTxnFilters = () => [txnSearch?.value ?? '', txnTypeSearch?.value ?? ''];
+
+  if (txnSearch)     txnSearch.addEventListener('input',     () => applyTxnSearch(...getTxnFilters()));
+  if (txnTypeSearch) txnTypeSearch.addEventListener('input', () => applyTxnSearch(...getTxnFilters()));
 }
