@@ -62,7 +62,6 @@ function reportCardHtml(meta, isSelected) {
  */
 function leaderboardHtml(windowData, paLabel, ipLabel) {
   const topHitters  = (windowData.hittingHighlights  || []).filter(h => h.type === 'top_hitter').slice(0, 5);
-  const hrHitters   = (windowData.hittingHighlights  || []).filter(h => h.type === 'hr_highlight').slice(0, 5);
   const topPitchers = (windowData.pitchingHighlights || []).filter(h => h.type === 'top_pitcher').slice(0, 5);
 
   function hitterRow(h) {
@@ -70,12 +69,12 @@ function leaderboardHtml(windowData, paLabel, ipLabel) {
     return `<tr>
       <td class="player-name-cell">${h.player}</td>
       <td>${h.level}</td>
-      <td>${s.G ?? '—'}</td>
-      <td>${s.PA ?? '—'}</td>
-      <td>${s.AVG != null ? fmtRate(s.AVG) : '—'}</td>
-      <td>${s.OBP != null ? fmtRate(s.OBP) : '—'}</td>
-      <td>${s.SLG != null ? fmtRate(s.SLG) : '—'}</td>
-      <td>${s.OPS != null ? fmtRate(s.OPS) : '—'}</td>
+      <td class="num-col">${s.G ?? '—'}</td>
+      <td class="num-col">${s.PA ?? '—'}</td>
+      <td class="num-col">${s.AVG != null ? fmtRate(s.AVG) : '—'}</td>
+      <td class="num-col">${s.OBP != null ? fmtRate(s.OBP) : '—'}</td>
+      <td class="num-col">${s.SLG != null ? fmtRate(s.SLG) : '—'}</td>
+      <td class="num-col">${s.OPS != null ? fmtRate(s.OPS) : '—'}</td>
     </tr>`;
   }
 
@@ -84,21 +83,17 @@ function leaderboardHtml(windowData, paLabel, ipLabel) {
     return `<tr>
       <td class="player-name-cell">${h.player}</td>
       <td>${h.level}</td>
-      <td>${s.G ?? '—'}</td>
-      <td>${s.IP ?? '—'}</td>
-      <td>${s.SO ?? '—'}</td>
-      <td>${s.ERA != null ? s.ERA.toFixed(2) : '—'}</td>
-      <td>${s.SO_BB_PCT != null ? fmtPct(s.SO_BB_PCT) : '—'}</td>
+      <td class="num-col">${s.G ?? '—'}</td>
+      <td class="num-col">${s.IP ?? '—'}</td>
+      <td class="num-col">${s.SO ?? '—'}</td>
+      <td class="num-col">${s.ERA != null ? s.ERA.toFixed(2) : '—'}</td>
+      <td class="num-col">${s.SO_BB_PCT != null ? fmtPct(s.SO_BB_PCT) : '—'}</td>
     </tr>`;
   }
 
   const hitRows = topHitters.length
     ? topHitters.map(hitterRow).join('')
     : `<tr><td colspan="8" class="report-empty-cell">No qualified hitters.</td></tr>`;
-
-  const hrRows = hrHitters.length
-    ? hrHitters.map(h => `<li class="report-highlight-item">${h.note}</li>`).join('')
-    : '';
 
   const pitRows = topPitchers.length
     ? topPitchers.map(pitcherRow).join('')
@@ -110,6 +105,13 @@ function leaderboardHtml(windowData, paLabel, ipLabel) {
     <h4 class="report-sub-heading">Top Hitters by OPS</h4>
     <div class="table-wrapper">
       <table class="stat-table">
+        <colgroup>
+          <col style="min-width:140px">
+          <col style="width:55px">
+          <col style="width:42px"><col style="width:48px">
+          <col style="width:52px"><col style="width:52px">
+          <col style="width:52px"><col style="width:52px">
+        </colgroup>
         <thead><tr>
           <th class="name-col">Player</th><th>Level</th>
           <th class="num-col">G</th><th class="num-col">PA</th>
@@ -120,13 +122,16 @@ function leaderboardHtml(windowData, paLabel, ipLabel) {
       </table>
     </div>
 
-    ${hrRows ? `
-    <h4 class="report-sub-heading">HR Leaders</h4>
-    <ul class="report-highlight-list">${hrRows}</ul>` : ''}
-
     <h4 class="report-sub-heading">Top Pitchers by K-BB%</h4>
     <div class="table-wrapper">
       <table class="stat-table">
+        <colgroup>
+          <col style="min-width:140px">
+          <col style="width:55px">
+          <col style="width:42px"><col style="width:52px">
+          <col style="width:42px"><col style="width:52px">
+          <col style="width:60px">
+        </colgroup>
         <thead><tr>
           <th class="name-col">Player</th><th>Level</th>
           <th class="num-col">G</th><th class="num-col">IP</th>
