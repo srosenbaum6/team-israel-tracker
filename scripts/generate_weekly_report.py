@@ -209,7 +209,9 @@ def fetch_transactions(all_ids, start_date, end_date):
     """
     Fetch transactions from MLB and AAA APIs.
     Mirrors fetchTransactions() in api.js.
+    Only returns transactions for players on the roster.
     """
+    roster_id_set = set(all_ids)
     txns = []
     seen = set()
     for sport_id in [1, 11]:
@@ -227,10 +229,14 @@ def fetch_transactions(all_ids, start_date, end_date):
                 player = t.get("person", {}).get("fullName", "")
                 if not player.strip():
                     continue
+                # Only include transactions for players actually on our roster
+                mlb_id = t.get("person", {}).get("id")
+                if mlb_id not in roster_id_set:
+                    continue
                 txns.append({
                     "date":        t.get("date") or t.get("effectiveDate", ""),
                     "player":      player,
-                    "mlbId":       t.get("person", {}).get("id"),
+                    "mlbId":       mlb_id,
                     "type":        t.get("typeDesc") or t.get("transactionType", "—"),
                     "fromTeam":    t.get("fromTeam", {}).get("name", "—") if t.get("fromTeam") else "—",
                     "toTeam":      t.get("toTeam",   {}).get("name", "—") if t.get("toTeam")   else "—",
@@ -526,7 +532,18 @@ def build_report(start_date, end_date, season):
     news_names = (top_performer_names + txn_player_names)[:10]
 
     print(f"  Fetching news for {len(news_names) + 1} queries...")
-    news = fetch_news_items(news_names)
+    news_raw = fetch_news_items(news_names)
+
+    # Only keep articles whose title mentions at least one roster player
+    # (the general "Team Israel baseball" query can surface non-roster names)
+    all_player_names = [p["name"] for p in all_players]
+    # Use last names for matching so "Goldschmidt" matches "Paul Goldschmidt"
+    last_names = {n.split()[-1].lower() for n in all_player_names if n.split()}
+    def _mentions_roster_player(title):
+        title_lower = title.lower()
+        return any(ln in title_lower for ln in last_names)
+
+    news = [n for n in news_raw if _mentions_roster_player(n["title"])]
 
     # ── Activity summary ──
     all_active = set(last7_h.keys()) | set(last7_p.keys())
