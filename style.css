@@ -350,7 +350,7 @@ tbody tr td { transition: background-color 0.15s ease, opacity 0.15s ease; }
   position: sticky;
   left: 0;
   z-index: 1;
-  background: inherit;
+  background: var(--white);
 }
 
 /* Keep the header name cell sticky too, above the body cells */
