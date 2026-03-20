@@ -30,6 +30,7 @@
       <button class="tab"        data-tab="last30"       role="tab">Last 30 Days</button>
       <button class="tab"        data-tab="last10"       role="tab">Last 10 Days</button>
       <button class="tab"        data-tab="transactions" role="tab">Transactions</button>
+      <button class="tab"        data-tab="reports"      role="tab">Weekly Reports</button>
     </nav>
 
     <!-- ── Shared filter bar ── -->
@@ -393,6 +394,28 @@
       </section>
 
     </div><!-- /panel-transactions -->
+
+    <!-- ══════════════════════════════════════
+         TAB: WEEKLY REPORTS
+    ══════════════════════════════════════ -->
+    <div class="tab-panel" id="panel-reports" hidden>
+
+      <div id="reports-list-view">
+
+        <!-- Sidebar: one card per report -->
+        <div id="reports-sidebar">
+          <p class="report-empty">Loading reports…</p>
+        </div>
+
+        <!-- Detail pane: full report content -->
+        <div id="reports-detail-view">
+          <div id="report-detail-placeholder">Select a report from the list.</div>
+          <div id="report-detail-content" hidden></div>
+        </div>
+
+      </div>
+
+    </div><!-- /panel-reports -->
 
   </main>
 

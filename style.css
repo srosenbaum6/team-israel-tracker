@@ -499,3 +499,206 @@ footer {
   border: 2px solid rgba(255,255,255,0.25);
   box-shadow: 0 3px 8px rgba(0,0,0,0.35);
 }
+
+/* ── Weekly Reports tab ─────────────────────────────── */
+
+#reports-list-view {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  margin-top: 16px;
+}
+
+/* Sidebar — scrollable list of report cards */
+#reports-sidebar {
+  flex: 0 0 210px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Detail pane */
+#reports-detail-view {
+  flex: 1 1 0;
+  min-width: 0;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  box-shadow: var(--shadow);
+}
+
+/* Placeholder / loading text inside detail pane */
+#report-detail-placeholder {
+  color: var(--gray-400);
+  font-size: 14px;
+  font-style: italic;
+  padding: 60px 0;
+  text-align: center;
+}
+
+/* ── Report cards (sidebar) ─────────────────────────── */
+.report-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 11px 14px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  user-select: none;
+}
+
+.report-card:hover { border-color: var(--blue); }
+
+.report-card-selected {
+  border-color: var(--blue);
+  background: var(--blue-pale);
+}
+
+.report-card-date {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--gray-900);
+}
+
+.report-card-meta {
+  font-size: 12px;
+  color: var(--gray-400);
+  margin-top: 3px;
+}
+
+/* ── Report detail header ───────────────────────────── */
+.report-detail-header  { margin-bottom: 20px; }
+
+.report-detail-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--blue);
+  margin: 0 0 6px;
+}
+
+.report-detail-summary {
+  font-size: 13px;
+  color: var(--gray-700);
+}
+
+.report-no-activity {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+/* ── Report sections ────────────────────────────────── */
+.report-section { margin-bottom: 28px; }
+
+.report-section-heading {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--gray-400);
+  border-bottom: 2px solid var(--gray-200);
+  padding-bottom: 5px;
+  margin-bottom: 12px;
+}
+
+.report-sub-heading {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gray-700);
+  margin: 14px 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.report-threshold-note {
+  font-size: 12px;
+  color: var(--gray-400);
+  font-style: italic;
+  margin-bottom: 8px;
+}
+
+/* ── Highlight pills (HR leaders) ──────────────────── */
+.report-highlight-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 10px;
+}
+
+.report-highlight-item {
+  font-size: 13px;
+  padding: 7px 12px;
+  background: var(--gray-100);
+  border-radius: var(--radius);
+  border-left: 3px solid var(--blue);
+}
+
+/* ── News list ──────────────────────────────────────── */
+.report-news-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.report-news-item {
+  font-size: 13px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.report-news-item:last-child { border-bottom: none; }
+
+.report-news-source {
+  color: var(--gray-400);
+  font-size: 12px;
+}
+
+/* ── Empty / error states ───────────────────────────── */
+.report-empty {
+  font-size: 13px;
+  color: var(--gray-400);
+  font-style: italic;
+}
+
+.report-empty-cell {
+  text-align: center;
+  color: var(--gray-400);
+  font-style: italic;
+  padding: 10px !important;
+}
+
+/* ── Mobile: sidebar becomes horizontal scroll strip ── */
+@media (max-width: 767px) {
+  #reports-list-view {
+    flex-direction: column;
+  }
+
+  #reports-sidebar {
+    flex: none;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-height: none;
+    padding-right: 0;
+    padding-bottom: 4px;
+  }
+
+  .report-card {
+    flex: 0 0 160px;
+    min-width: 160px;
+  }
+
+  #reports-detail-view {
+    padding: 16px;
+  }
+}

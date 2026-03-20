@@ -1,0 +1,59 @@
+name: Weekly Report
+
+on:
+  schedule:
+    # Every Friday at 9 AM UTC (5 AM ET / 2 AM PT)
+    # Runs one hour after the daily indy stats scraper (8 AM UTC) so indy data is fresh.
+    - cron: '0 9 * * 5'
+  workflow_dispatch:
+    # Manual trigger — useful for testing or backfilling a missed week.
+    # Leave inputs blank to use today / 7 days ago.
+    inputs:
+      end_date:
+        description: 'Report end date (YYYY-MM-DD). Default: today.'
+        required: false
+      start_date:
+        description: 'Report start date (YYYY-MM-DD). Default: 7 days ago.'
+        required: false
+      season:
+        description: 'Season year (YYYY). Default: current year.'
+        required: false
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write   # required to commit report JSON files
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Generate weekly report
+        env:
+          GMAIL_USER:          ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD:  ${{ secrets.GMAIL_APP_PASSWORD }}
+          REPORT_SUBSCRIBERS:  ${{ secrets.REPORT_SUBSCRIBERS }}
+          # These are only set when manually triggered with inputs
+          REPORT_END_DATE:     ${{ github.event.inputs.end_date }}
+          REPORT_START_DATE:   ${{ github.event.inputs.start_date }}
+          REPORT_SEASON:       ${{ github.event.inputs.season }}
+        run: python scripts/generate_weekly_report.py
+
+      - name: Commit report files
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/weekly_reports/
+          # Only commit if there are new/changed files
+          git diff --cached --quiet || git commit -m "chore: add weekly report $(date -u +%Y-%m-%d) [skip ci]"
+          git push

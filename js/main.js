@@ -16,6 +16,8 @@ import {
   colorizeTable, sortDefault, playerLink, handColorStyle,
 } from './tables.js';
 
+import { loadReportsTab } from './reports.js';
+
 // Last day of each completed season — used to anchor "Last 30/10 days" tabs
 // so they show the final stretch of that season rather than days from today.
 const SEASON_END = {
@@ -64,7 +66,7 @@ const PITCHING_COLOR = {
 
   // Track which tabs have already been loaded to avoid redundant API calls
   // Reset whenever the season changes
-  let loaded = { season: false, last30: false, last10: false, transactions: false, defense: false };
+  let loaded = { season: false, last30: false, last10: false, transactions: false, defense: false, reports: false };
 
   // Returns the "anchor" end-date for date-range tabs.
   // For past seasons, use the known season-end date; for current, use today.
@@ -405,7 +407,8 @@ const PITCHING_COLOR = {
         );
 
         // Reset all loaded flags so tabs re-fetch for the new season
-        loaded = { season: false, last30: false, last10: false, transactions: false, defense: false };
+        // Note: reports are season-independent, so we keep loaded.reports as-is
+        loaded = { season: false, last30: false, last10: false, transactions: false, defense: false, reports: loaded.reports };
 
         // Update transactions default date range to match season
         const startInput = document.getElementById('txnStartDate');
@@ -441,8 +444,8 @@ const PITCHING_COLOR = {
       panel.hidden = panel.id !== `panel-${tabName}`;
     });
 
-    // Show/hide shared filter bar (not shown on transactions tab)
-    document.getElementById('statsFilterBar').hidden = (tabName === 'transactions');
+    // Show/hide shared filter bar (not shown on transactions or reports tabs)
+    document.getElementById('statsFilterBar').hidden = (tabName === 'transactions' || tabName === 'reports');
 
     // Load data for the tab
     switch (tabName) {
@@ -450,6 +453,9 @@ const PITCHING_COLOR = {
       case 'last30':       loadDateRangeTab(30, 'last30'); break;
       case 'last10':       loadDateRangeTab(10, 'last10'); break;
       case 'transactions': /* loaded on button click */ break;
+      case 'reports':
+        if (!loaded.reports) { loaded.reports = true; loadReportsTab(); }
+        break;
     }
   }
 
