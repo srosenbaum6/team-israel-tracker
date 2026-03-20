@@ -9,6 +9,14 @@
       "totalTransactions": 394
     },
     {
+      "weekEnding": "2025-09-08",
+      "weekStarting": "2025-09-01",
+      "season": "2025",
+      "filename": "2025-09-08.json",
+      "activePlayers": 33,
+      "totalTransactions": 5
+    },
+    {
       "weekEnding": "2025-07-15",
       "weekStarting": "2025-07-15",
       "season": "2025",
