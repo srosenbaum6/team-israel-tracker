@@ -1,1 +1,12 @@
-{"reports":[]}
+{
+  "reports": [
+    {
+      "weekEnding": "2026-03-20",
+      "weekStarting": "2026-03-13",
+      "season": "2026",
+      "filename": "2026-03-20.json",
+      "activePlayers": 0,
+      "totalTransactions": 394
+    }
+  ]
+}
