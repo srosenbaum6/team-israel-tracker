@@ -23,6 +23,14 @@
       "filename": "2025-07-15.json",
       "activePlayers": 1,
       "totalTransactions": 51
+    },
+    {
+      "weekEnding": "2025-06-21",
+      "weekStarting": "2025-06-14",
+      "season": "2025",
+      "filename": "2025-06-21.json",
+      "activePlayers": 31,
+      "totalTransactions": 6
     }
   ]
 }
