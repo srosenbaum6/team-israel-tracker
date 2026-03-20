@@ -794,10 +794,11 @@ def send_email(report, subscribers):
 
 def main():
     today_str = date.today().isoformat()
-    end_date   = os.environ.get("REPORT_END_DATE",   today_str)
-    start_date = os.environ.get("REPORT_START_DATE",
-                                (date.today() - timedelta(days=7)).isoformat())
-    season     = os.environ.get("REPORT_SEASON", str(date.today().year))
+    # Use `or` so blank strings from empty workflow_dispatch inputs
+    # fall back to defaults, just like missing env vars do.
+    end_date   = os.environ.get("REPORT_END_DATE")   or today_str
+    start_date = os.environ.get("REPORT_START_DATE") or (date.today() - timedelta(days=7)).isoformat()
+    season     = os.environ.get("REPORT_SEASON")     or str(date.today().year)
 
     print(f"Generating report: {start_date} → {end_date} (season {season})")
 
