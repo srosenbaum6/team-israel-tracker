@@ -323,7 +323,9 @@ tbody tr td { transition: background-color 0.15s ease, opacity 0.15s ease; }
 
 .stat-table tbody tr:last-child { border-bottom: none; }
 .stat-table tbody tr:nth-child(even) { background: var(--gray-100); }
+.stat-table tbody tr:nth-child(even) .player-name-cell { background: var(--gray-100); }
 .stat-table tbody tr:hover { background: var(--blue-pale); }
+.stat-table tbody tr:hover .player-name-cell { background: var(--blue-pale); }
 
 .stat-table tbody tr[hidden] { display: none; }
 
@@ -345,6 +347,17 @@ tbody tr td { transition: background-color 0.15s ease, opacity 0.15s ease; }
 .player-name-cell {
   font-weight: 600;
   white-space: nowrap;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: inherit;
+}
+
+/* Keep the header name cell sticky too, above the body cells */
+.stat-table thead th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
 }
 
 .player-name-cell a {
