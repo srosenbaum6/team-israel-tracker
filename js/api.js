@@ -444,3 +444,82 @@ export async function buildFieldingData(rosterPlayers, season = '2025') {
   }
   return result;
 }
+
+// ── Player status (live game + IL) ─────────────────────────────────────────
+
+/**
+ * Fetches two status sets for roster players:
+ *  - liveSet: mlbIds of players currently in a live (in-progress) MLB game
+ *  - ilSet:   mlbIds of players currently on the Injured List
+ *
+ * Both checks are best-effort; failures are silently ignored so the rest
+ * of the page still works if the API is unreachable.
+ *
+ * @param {Array} rosterPlayers  Full roster array from roster.json
+ * @returns {{ liveSet: Set<number>, ilSet: Set<number> }}
+ */
+export async function fetchPlayerStatuses(rosterPlayers) {
+  const liveSet = new Set();
+  const ilSet   = new Set();
+
+  // ── 1. Live game check ──────────────────────────────────────────────────
+  // Fetch today's MLB schedule, find in-progress games, pull boxscore player IDs.
+  try {
+    const schedule = await mlbGet(`/schedule?sportId=1&date=${today()}`);
+    const liveGames = (schedule.dates || [])
+      .flatMap(d => d.games || [])
+      .filter(g => g.status?.abstractGameState === 'Live');
+
+    if (liveGames.length) {
+      const boxscores = await Promise.all(
+        liveGames.map(g => mlbGet(`/game/${g.gamePk}/boxscore`))
+      );
+      for (const bs of boxscores) {
+        for (const side of ['home', 'away']) {
+          for (const key of Object.keys(bs.teams?.[side]?.players || {})) {
+            // Keys are like "ID665152"
+            const id = parseInt(key.replace('ID', ''), 10);
+            if (!isNaN(id)) liveSet.add(id);
+          }
+        }
+      }
+    }
+  } catch { /* best-effort */ }
+
+  // ── 2. IL check ─────────────────────────────────────────────────────────
+  // Build a team-name → team-ID map, then fetch full rosters for only the
+  // teams that have our MLB-level players, and look for IL status codes.
+  try {
+    const season = new Date().getFullYear();
+    const teamsData = await mlbGet(`/teams?sportId=1&season=${season}`);
+    const nameToId  = Object.fromEntries(
+      (teamsData.teams || []).map(t => [t.name, t.id])
+    );
+
+    const teamIds = [...new Set(
+      rosterPlayers
+        .filter(p => p.level === 'MLB' && nameToId[p.team])
+        .map(p => nameToId[p.team])
+    )];
+
+    if (teamIds.length) {
+      const rosters = await Promise.all(
+        teamIds.map(tid =>
+          mlbGet(`/teams/${tid}/roster?rosterType=fullRoster&season=${season}`)
+        )
+      );
+      for (const r of rosters) {
+        for (const entry of r.roster || []) {
+          const code = entry.status?.code || '';
+          // Any code starting with IL or DL = Injured List
+          if (code.startsWith('IL') || code.startsWith('DL')) {
+            const id = entry.person?.id;
+            if (id) ilSet.add(id);
+          }
+        }
+      }
+    }
+  } catch { /* best-effort */ }
+
+  return { liveSet, ilSet };
+}

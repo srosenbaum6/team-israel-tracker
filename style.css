@@ -366,6 +366,43 @@ tbody tr td { transition: background-color 0.15s ease, opacity 0.15s ease; }
 
 .player-name-cell a:hover { color: var(--blue); }
 
+/* ── Player status indicators ──────────────────────────────────────────── */
+
+/* Pulsing green dot — player is in a live game right now */
+.status-live {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #16a34a;
+  margin-left: 7px;
+  vertical-align: middle;
+  animation: status-pulse 1.6s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes status-pulse {
+  0%, 100% { opacity: 1;   transform: scale(1);    }
+  50%       { opacity: 0.3; transform: scale(0.75); }
+}
+
+/* Red badge — player is on the Injured List */
+.status-il {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.3;
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  border-radius: 3px;
+  padding: 0 4px;
+  margin-left: 6px;
+  vertical-align: middle;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
 /* ── Level badges ──────────────────────────────────── */
 .badge {
   display: inline-block;

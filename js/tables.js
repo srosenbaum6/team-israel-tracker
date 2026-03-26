@@ -84,7 +84,7 @@ export function playerLink(name, bbrefId, bbrefRegId, mlbId) {
 
 export function hittingRowHtml(row) {
   return `
-    <tr data-current-level="${row.currentLevel ?? ''}" data-highest-level="${row.careerHighestLevel ?? ''}" data-type="hitting" data-name="${row.name.toLowerCase()}">
+    <tr data-mlbid="${row.mlbId ?? ''}" data-current-level="${row.currentLevel ?? ''}" data-highest-level="${row.careerHighestLevel ?? ''}" data-type="hitting" data-name="${row.name.toLowerCase()}">
       <td class="player-name-cell" style="${handColorStyle(row.bats)}">${playerLink(row.name, row.bbrefId, row.bbrefRegId, row.mlbId)}</td>
       <td>${row.team}</td>
       <td>${levelBadge(row.currentLevel)}</td>
@@ -112,7 +112,7 @@ export function hittingRowHtml(row) {
 
 export function pitchingRowHtml(row) {
   return `
-    <tr data-current-level="${row.currentLevel ?? ''}" data-highest-level="${row.careerHighestLevel ?? ''}" data-type="pitching" data-name="${row.name.toLowerCase()}">
+    <tr data-mlbid="${row.mlbId ?? ''}" data-current-level="${row.currentLevel ?? ''}" data-highest-level="${row.careerHighestLevel ?? ''}" data-type="pitching" data-name="${row.name.toLowerCase()}">
       <td class="player-name-cell" style="${handColorStyle(row.throws)}">${playerLink(row.name, row.bbrefId, row.bbrefRegId, row.mlbId)}</td>
       <td>${row.team}</td>
       <td>${levelBadge(row.currentLevel)}</td>

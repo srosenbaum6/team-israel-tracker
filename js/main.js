@@ -7,7 +7,7 @@
 
 import {
   buildHittingRows, buildPitchingRows, fetchTransactions, buildFieldingData,
-  dateNDaysAgo, today,
+  fetchPlayerStatuses, dateNDaysAgo, today,
 } from './api.js';
 
 import {
@@ -61,8 +61,7 @@ const PITCHING_COLOR = {
   let indyStats = null;     // loaded once from indy_stats.json
   let otherStats = null;    // loaded once from other_stats.json
 
-  // Default to 2025 since the 2026 season has not yet started
-  let selectedSeason = '2025';
+  let selectedSeason = '2026';
 
   // Track which tabs have already been loaded to avoid redundant API calls
   // Reset whenever the season changes
@@ -72,6 +71,29 @@ const PITCHING_COLOR = {
   // For past seasons, use the known season-end date; for current, use today.
   function seasonEndDate() {
     return SEASON_END[selectedSeason] ?? today();
+  }
+
+  // Cached status data — fetched once in the background after roster loads
+  let cachedStatuses = null; // { liveSet, ilSet }
+
+  // Apply live/IL icons to every tr[data-mlbid] currently in the DOM.
+  // Called once when statuses arrive, and again after each tab populates.
+  function applyStatusIcons({ liveSet, ilSet }) {
+    document.querySelectorAll('tr[data-mlbid]:not([data-status-applied])').forEach(row => {
+      row.dataset.statusApplied = '1';
+      const id = parseInt(row.dataset.mlbid, 10);
+      if (!id) return;
+      const cell = row.querySelector('.player-name-cell');
+      if (!cell) return;
+      if (liveSet.has(id)) {
+        cell.insertAdjacentHTML('beforeend',
+          '<span class="status-live" title="Currently in a live game"></span>');
+      }
+      if (ilSet.has(id)) {
+        cell.insertAdjacentHTML('beforeend',
+          '<span class="status-il" title="On the Injured List">IL</span>');
+      }
+    });
   }
 
   // ── UI helpers ──────────────────────────────────────────────────────────
@@ -215,6 +237,7 @@ const PITCHING_COLOR = {
       sortDefault('tbl-season-hitting',  9, true);   // OPS desc
       sortDefault('tbl-season-pitching', 9, true);   // SO-BB% desc
       applyFilters();
+      if (cachedStatuses) applyStatusIcons(cachedStatuses);
       loaded.season = true;
     } catch (err) {
       showError(`Failed to load season stats: ${err.message}`);
@@ -258,6 +281,7 @@ const PITCHING_COLOR = {
       sortDefault(`tbl-${tabKey}-hitting`,  9, true);
       sortDefault(`tbl-${tabKey}-pitching`, 9, true);
       applyFilters();
+      if (cachedStatuses) applyStatusIcons(cachedStatuses);
       loaded[tabKey] = true;
     } catch (err) {
       showError(`Failed to load stats: ${err.message}`);
@@ -374,7 +398,7 @@ const PITCHING_COLOR = {
           const g = p.posG[pos];
           return `<td class="num-col">${g != null ? g : '—'}</td>`;
         }).join('');
-        return `<tr data-name="${p.name.toLowerCase()}">
+        return `<tr data-mlbid="${p.mlbId ?? ''}" data-name="${p.name.toLowerCase()}">
           <td class="player-name-cell" style="${handColorStyle(p.bats)}">${playerLink(p.name, p.bbrefId, p.bbrefRegId, p.mlbId)}</td>
           ${cells}
         </tr>`;
@@ -382,7 +406,7 @@ const PITCHING_COLOR = {
 
       populateTable('tbl-defense', htmlRows, 'No fielding data available.');
       initSort('tbl-defense');
-
+      if (cachedStatuses) applyStatusIcons(cachedStatuses);
       loaded.defense = true;
     } catch (err) {
       showError(`Failed to load fielding stats: ${err.message}`);
@@ -484,6 +508,15 @@ const PITCHING_COLOR = {
     console.error(err);
     return;
   }
+
+  // Kick off status fetch in the background — doesn't block page load.
+  // When resolved, apply icons to whatever rows are already in the DOM.
+  fetchPlayerStatuses(roster)
+    .then(statuses => {
+      cachedStatuses = statuses;
+      applyStatusIcons(cachedStatuses);
+    })
+    .catch(() => {});
 
   initFilters();
 

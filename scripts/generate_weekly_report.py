@@ -766,6 +766,19 @@ def build_email_html(report):
     {_section_html("In the News", _news_section_html(report["news"]))}
 
     {_section_html("Transactions", _txn_section_html(report["transactions"]))}
+
+    <!-- CTA -->
+    <div style="text-align:center;margin:28px 0 8px;">
+      <a href="{tracker_url}"
+         style="display:inline-block;background:#003399;color:#fff;font-weight:700;
+                font-size:14px;text-decoration:none;padding:12px 28px;
+                border-radius:6px;letter-spacing:.3px;">
+        View Full Dashboard &rarr;
+      </a>
+      <p style="font-size:11px;color:#9ca3af;margin:8px 0 0;">
+        Stats, standings, defense, and more at the Team Israel Tracker
+      </p>
+    </div>
   </div>
 
   <!-- Footer -->
