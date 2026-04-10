@@ -486,11 +486,11 @@ const PITCHING_COLOR = {
   // ── Transactions fetch button ────────────────────────────────────────────
 
   function initTransactionControls() {
-    // Default date range: full 2025 season (matches default selectedSeason)
+    // Default date range: last 7 days
     const startInput = document.getElementById('txnStartDate');
     const endInput   = document.getElementById('txnEndDate');
-    if (startInput) startInput.value = '2025-03-20';
-    if (endInput)   endInput.value   = '2025-10-30';
+    if (startInput) startInput.value = dateNDaysAgo(7);
+    if (endInput)   endInput.value   = today();
 
     document.getElementById('txnFetchBtn')?.addEventListener('click', () => {
       const start = startInput?.value || dateNDaysAgo(90);

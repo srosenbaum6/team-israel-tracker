@@ -543,7 +543,13 @@ def build_report(start_date, end_date, season):
         title_lower = title.lower()
         return any(ln in title_lower for ln in last_names)
 
-    news = [n for n in news_raw if _mentions_roster_player(n["title"])]
+    _FANTASY_TERMS = {'fantasy', 'rotoballer', 'rotoworld', 'fantasypros',
+                      'rotowire', 'fantrax', 'fanduel', 'draftkings'}
+    def _is_fantasy(item):
+        text = (item.get('title', '') + ' ' + item.get('source', '')).lower()
+        return any(t in text for t in _FANTASY_TERMS)
+
+    news = [n for n in news_raw if _mentions_roster_player(n["title"]) and not _is_fantasy(n)]
 
     # ── Activity summary ──
     all_active = set(last7_h.keys()) | set(last7_p.keys())
@@ -617,6 +623,19 @@ def save_report(report, end_date):
 
 # ── Email ─────────────────────────────────────────────────────────────────────
 
+def _fmt_stat(col, val):
+    """Format a single stat value for the email table."""
+    if val is None:
+        return '—'
+    rate_cols = {'AVG', 'OBP', 'SLG', 'OPS'}
+    pct_cols  = {'SO_PCT', 'BB_PCT', 'SO_BB_PCT'}
+    if col in rate_cols:
+        s = f"{float(val):.3f}"
+        return s.lstrip('0') or '.000'
+    if col in pct_cols:
+        return f"{float(val) * 100:.1f}%"
+    return str(val)
+
 def _highlights_rows_html(highlights, h_type, cols):
     """Render up to 5 highlights of a given type as <tr> rows."""
     filtered = [h for h in highlights if h["type"] == h_type][:5]
@@ -624,7 +643,10 @@ def _highlights_rows_html(highlights, h_type, cols):
         return f'<tr><td colspan="{len(cols)}" style="color:#9ca3af;font-style:italic;padding:8px;">None this week.</td></tr>'
     rows = []
     for h in filtered:
-        cells = "".join(f"<td style='padding:6px 10px;border-bottom:1px solid #e9eaec;'>{h['stats'].get(c, '—')}</td>" for c in cols)
+        cells = "".join(
+            f"<td style='padding:6px 10px;border-bottom:1px solid #e9eaec;'>{_fmt_stat(c, h['stats'].get(c))}</td>"
+            for c in cols
+        )
         rows.append(
             f"<tr>"
             f"<td style='padding:6px 10px;border-bottom:1px solid #e9eaec;font-weight:600;'>{h['player']}</td>"
@@ -652,7 +674,7 @@ def _leaderboard_html(window_data, pa_label, ip_label):
     # Pitchers table
     pit_rows = _highlights_rows_html(
         window_data["pitchingHighlights"], "top_pitcher",
-        ["G", "IP", "SO", "ERA", "SO_BB_PCT"]
+        ["G", "IP", "SO_PCT", "BB_PCT", "SO_BB_PCT", "ERA"]
     )
 
     th = "style='background:#f5f6f8;padding:6px 10px;text-align:left;font-weight:600;font-size:12px;'"
@@ -672,7 +694,7 @@ def _leaderboard_html(window_data, pa_label, ip_label):
   <thead><tr>
     <th {th}>Pitcher</th><th {th}>Level</th>
     <th {th}>G</th><th {th}>IP</th>
-    <th {th}>K</th><th {th}>ERA</th><th {th}>K-BB%</th>
+    <th {th}>SO%</th><th {th}>BB%</th><th {th}>K-BB%</th><th {th}>ERA</th>
   </tr></thead>
   <tbody>{pit_rows}</tbody>
 </table>
