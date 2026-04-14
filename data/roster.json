@@ -471,6 +471,102 @@
       "bbrefRegId": "gordon001rj-",
       "bbrefIdVerified": false,
       "throws": "R"
+    },
+    {
+      "name": "Jake Bird",
+      "position": "RHP",
+      "positionGroup": "pitching",
+      "team": "New York Yankees",
+      "level": "MLB",
+      "mlbId": 656234,
+      "bbrefId": "birdja01",
+      "bbrefRegId": null,
+      "bbrefIdVerified": true,
+      "throws": "R"
+    },
+    {
+      "name": "Henry Godbout",
+      "position": "SS",
+      "positionGroup": "hitting",
+      "team": "Greenville Drive",
+      "level": "MiLB",
+      "mlbId": 804995,
+      "bbrefId": null,
+      "bbrefRegId": "godbou000hen",
+      "bbrefIdVerified": true,
+      "bats": "R"
+    },
+    {
+      "name": "Dylan Cease",
+      "position": "RHP",
+      "positionGroup": "pitching",
+      "team": "Toronto Blue Jays",
+      "level": "MLB",
+      "mlbId": 656302,
+      "bbrefId": "ceasedy01",
+      "bbrefRegId": null,
+      "bbrefIdVerified": true,
+      "throws": "R"
+    },
+    {
+      "name": "Max Fried",
+      "position": "LHP",
+      "positionGroup": "pitching",
+      "team": "New York Yankees",
+      "level": "MLB",
+      "mlbId": 608331,
+      "bbrefId": "friedma01",
+      "bbrefRegId": null,
+      "bbrefIdVerified": true,
+      "throws": "L"
+    },
+    {
+      "name": "Alex Bregman",
+      "position": "3B",
+      "positionGroup": "hitting",
+      "team": "Chicago Cubs",
+      "level": "MLB",
+      "mlbId": 608324,
+      "bbrefId": "bregmal01",
+      "bbrefRegId": null,
+      "bbrefIdVerified": true,
+      "bats": "R"
+    },
+    {
+      "name": "Tyler Uberstine",
+      "position": "RHP",
+      "positionGroup": "pitching",
+      "team": "Boston Red Sox",
+      "level": "MLB",
+      "mlbId": 700413,
+      "bbrefId": null,
+      "bbrefRegId": "uberst000tyl",
+      "bbrefIdVerified": true,
+      "throws": "R"
+    },
+    {
+      "name": "Scott Effross",
+      "position": "RHP",
+      "positionGroup": "pitching",
+      "team": "Detroit Tigers",
+      "level": "MiLB",
+      "mlbId": 664123,
+      "bbrefId": "effrosc01",
+      "bbrefRegId": null,
+      "bbrefIdVerified": true,
+      "throws": "R"
+    },
+    {
+      "name": "Evan Phillips",
+      "position": "RHP",
+      "positionGroup": "pitching",
+      "team": "Los Angeles Dodgers",
+      "level": "MLB",
+      "mlbId": 623465,
+      "bbrefId": "phillev01",
+      "bbrefRegId": null,
+      "bbrefIdVerified": true,
+      "throws": "R"
     }
   ]
 }
