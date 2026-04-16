@@ -567,6 +567,18 @@
       "bbrefRegId": null,
       "bbrefIdVerified": true,
       "throws": "R"
+    },
+    {
+      "name": "Brian Zeldin",
+      "position": "RHP",
+      "positionGroup": "pitching",
+      "team": "Minnesota Twins",
+      "level": "MiLB",
+      "mlbId": 823227,
+      "bbrefId": null,
+      "bbrefRegId": null,
+      "bbrefIdVerified": false,
+      "throws": "R"
     }
   ]
 }
