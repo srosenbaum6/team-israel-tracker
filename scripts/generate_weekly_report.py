@@ -31,6 +31,7 @@ import xml.etree.ElementTree as ET
 from datetime import date, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.utils import parsedate
 from pathlib import Path
 
 import requests
@@ -549,7 +550,28 @@ def build_report(start_date, end_date, season):
         text = (item.get('title', '') + ' ' + item.get('source', '')).lower()
         return any(t in text for t in _FANTASY_TERMS)
 
-    news = [n for n in news_raw if _mentions_roster_player(n["title"]) and not _is_fantasy(n)]
+    # Only keep articles published within 7 days before the report's end date.
+    # parsedate returns a 9-tuple (RFC 2822 → struct_time); slice to 6 for datetime.
+    _cutoff = date.fromisoformat(end_date) - timedelta(days=7)
+    def _is_recent(item):
+        raw = item.get("published", "")
+        if not raw:
+            return False  # no date → exclude
+        try:
+            parsed = parsedate(raw)
+            if not parsed:
+                return False
+            pub = date(*parsed[:3])  # year, month, day
+            return _cutoff <= pub <= date.fromisoformat(end_date)
+        except Exception:
+            return False
+
+    news = [
+        n for n in news_raw
+        if _mentions_roster_player(n["title"])
+        and not _is_fantasy(n)
+        and _is_recent(n)
+    ]
 
     # ── Activity summary ──
     all_active = set(last7_h.keys()) | set(last7_p.keys())
