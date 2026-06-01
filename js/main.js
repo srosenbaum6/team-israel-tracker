@@ -26,31 +26,32 @@ const SEASON_END = {
 };
 
 // ── Color-coding config ────────────────────────────────────────────────────
-// Maps column index → true (higher is better / red) | false (lower is better / blue)
+// Each entry: { higherIsBetter, midpoint } anchors white at a league-average value.
+// blueOnly entries use a white→blue scale (0 = white, table-max = darkest blue).
 // Hitting table columns: [0]Player [1]Org [2]CurLvl [3]HiLvl [4]G [5]PA
 //   [6]AVG [7]OBP [8]SLG [9]OPS [10]SO% [11]BB% [12]2B [13]3B [14]HR [15]RBI [16]SB [17]CS
 const HITTING_COLOR = {
-  6: true,   // AVG
-  7: true,   // OBP
-  8: true,   // SLG
-  9: true,   // OPS
-  10: false, // SO% (high SO% is bad for hitters)
-  11: true,  // BB%
-  12: true,  // 2B
-  13: true,  // 3B
-  14: true,  // HR
-  15: true,  // RBI
-  16: true,  // SB
+  6:  { higherIsBetter: true,  midpoint: 0.245 },  // AVG
+  7:  { higherIsBetter: true,  midpoint: 0.320 },  // OBP
+  8:  { higherIsBetter: true,  midpoint: 0.390 },  // SLG
+  9:  { higherIsBetter: true,  midpoint: 0.710 },  // OPS
+  10: { higherIsBetter: false, midpoint: 22    },  // SO% (parsed from "22.0%")
+  11: { higherIsBetter: true,  midpoint: 9     },  // BB% (parsed from "9.0%")
+  12: { blueOnly: true },  // 2B
+  13: { blueOnly: true },  // 3B
+  14: { blueOnly: true },  // HR
+  15: { blueOnly: true },  // RBI
+  16: { blueOnly: true },  // SB
 };
 
 // Pitching table columns: [0]Player [1]Org [2]CurLvl [3]HiLvl [4]G [5]GS [6]IP
 //   [7]SO% [8]BB% [9]SO-BB% [10]WHIP [11]ERA
 const PITCHING_COLOR = {
-  7: true,   // SO%
-  8: false,  // BB% (high BB% is bad)
-  9: true,   // SO-BB%
-  10: false, // WHIP
-  11: false, // ERA
+  7:  { higherIsBetter: true,  midpoint: 22   },  // SO%
+  8:  { higherIsBetter: false, midpoint: 9    },  // BB%
+  9:  { higherIsBetter: true,  midpoint: 13   },  // SO-BB%
+  10: { higherIsBetter: false, midpoint: 1.30 },  // WHIP
+  11: { higherIsBetter: false, midpoint: 4.00 },  // ERA
 };
 
 (async function () {

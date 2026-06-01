@@ -204,32 +204,39 @@ function sortTableByColumn(table, colIndex, descending) {
 
 // ── Color coding ───────────────────────────────────────────────────────────
 
-function getRankColor(value, min, max, higherIsBetter) {
-  if (min === max) return '';
-  const ratio     = (value - min) / (max - min);
-  const goodRatio = higherIsBetter ? ratio : 1 - ratio;
+// Red ↔ white ↔ blue scale anchored at a fixed midpoint.
+// maxDev = max(|value - midpoint|) across all rows — sets the saturation ceiling.
+function getMidpointColor(value, midpoint, maxDev, higherIsBetter) {
+  if (maxDev === 0) return '';
+  const dev     = Math.max(-1, Math.min(1, (value - midpoint) / maxDev));
+  const goodDev = higherIsBetter ? dev : -dev;
 
   let r, g, b;
-  if (goodRatio >= 0.5) {
-    // White → blue (good)
-    const t = (goodRatio - 0.5) * 2;
+  if (goodDev >= 0) {
+    const t = goodDev;
     r = Math.round(255 - t * 90);
     g = Math.round(255 - t * 90);
     b = 255;
   } else {
-    // Red → white (bad)
-    const t = goodRatio * 2;
+    const t = -goodDev;
     r = 255;
-    g = Math.round(165 + t * 90);
-    b = Math.round(165 + t * 90);
+    g = Math.round(255 - t * 90);
+    b = Math.round(255 - t * 90);
   }
   return `rgb(${r},${g},${b})`;
+}
+
+// White → dark-blue scale for counting stats (0 = white, max = darkest blue).
+function getBlueOnlyColor(value, maxVal) {
+  if (maxVal === 0) return '';
+  const t = Math.min(value / maxVal, 1);
+  return `rgb(${Math.round(255 - t * 215)},${Math.round(255 - t * 175)},255)`;
 }
 
 /**
  * Apply heat-map background colors to stat columns in a table.
  * @param {string}  tableId
- * @param {Object}  colConfig  { colIndex: higherIsBetter (bool) }
+ * @param {Object}  colConfig  { colIndex: { higherIsBetter, midpoint } | { blueOnly: true } }
  * @param {number}  [paCol]    Column index containing PA; rows below threshold are grayed
  * @param {number}  [paMin=50] PA threshold below which stat cells are grayed
  */
@@ -251,53 +258,57 @@ export function colorizeTable(tableId, colConfig, paCol = null, paMin = 50) {
     return parseFloat(cleaned);
   }
 
-  // Collect all values per column (using all rows for a stable color scale)
-  const colMins = {}, colMaxes = {};
-  for (const colIdx of Object.keys(colConfig)) {
+  // Pre-compute per-column scale data
+  const colScale = {};
+  for (const [colIdxStr, cfg] of Object.entries(colConfig)) {
     const vals = rows
-      .map(row => parseCell(row.cells[Number(colIdx)]?.textContent?.trim()))
+      .map(row => parseCell(row.cells[Number(colIdxStr)]?.textContent?.trim()))
       .filter(v => !isNaN(v));
-    if (vals.length) {
-      colMins[colIdx]  = Math.min(...vals);
-      colMaxes[colIdx] = Math.max(...vals);
+    if (!vals.length) continue;
+
+    if (cfg.blueOnly) {
+      colScale[colIdxStr] = { blueOnly: true, maxVal: Math.max(...vals) };
+    } else {
+      const maxDev = Math.max(...vals.map(v => Math.abs(v - cfg.midpoint)));
+      colScale[colIdxStr] = { midpoint: cfg.midpoint, maxDev, higherIsBetter: cfg.higherIsBetter };
     }
   }
 
   // Apply styling row by row
   for (const row of rows) {
-    // Determine if this is a low-PA row (gray out stats)
     let isLowPa = false;
     if (paCol !== null) {
       const paVal = parseFloat(row.cells[paCol]?.textContent?.trim());
       isLowPa = !isNaN(paVal) && paVal < paMin;
     }
 
-    for (const [colIdxStr, higherIsBetter] of Object.entries(colConfig)) {
+    for (const colIdxStr of Object.keys(colConfig)) {
       const colIdx = Number(colIdxStr);
       const cell = row.cells[colIdx];
       if (!cell) continue;
 
       if (isLowPa) {
-        // Gray out stat cells (col 4 onwards) for low-PA players
         for (let i = 4; i < row.cells.length; i++) {
           row.cells[i].style.opacity = '0.38';
           row.cells[i].style.backgroundColor = '';
         }
-        break; // done with this row
+        break;
       }
 
-      // Apply heat-map color
       const val = parseCell(cell.textContent.trim());
-      if (isNaN(val) || colMins[colIdxStr] === undefined) {
+      const scale = colScale[colIdxStr];
+      if (isNaN(val) || !scale) {
         cell.style.backgroundColor = '';
         cell.style.opacity = '';
         continue;
       }
 
       cell.style.opacity = '';
-      cell.style.backgroundColor = getRankColor(
-        val, colMins[colIdxStr], colMaxes[colIdxStr], higherIsBetter
-      );
+      if (scale.blueOnly) {
+        cell.style.backgroundColor = getBlueOnlyColor(val, scale.maxVal);
+      } else {
+        cell.style.backgroundColor = getMidpointColor(val, scale.midpoint, scale.maxDev, scale.higherIsBetter);
+      }
     }
   }
 }

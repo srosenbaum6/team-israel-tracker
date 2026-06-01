@@ -1,6 +1,18 @@
 {
   "players": [
     {
+      "name": "Eric Reyzelman",
+      "position": "RHP",
+      "positionGroup": "pitching",
+      "team": "New York Yankees",
+      "level": "MiLB",
+      "mlbId": 801432,
+      "bbrefId": null,
+      "bbrefRegId": "reyzel000eri",
+      "bbrefIdVerified": true,
+      "throws": "R"
+    },
+    {
       "name": "Dean Kremer",
       "position": "RHP",
       "positionGroup": "pitching",
