@@ -581,6 +581,18 @@
       "throws": "R"
     },
     {
+      "name": "Wade Meckler",
+      "position": "OF",
+      "positionGroup": "hitting",
+      "team": "San Francisco Giants",
+      "level": "MLB",
+      "mlbId": 682998,
+      "bbrefId": "mecklwa01",
+      "bbrefRegId": null,
+      "bbrefIdVerified": false,
+      "bats": "L"
+    },
+    {
       "name": "Brian Zeldin",
       "position": "RHP",
       "positionGroup": "pitching",
