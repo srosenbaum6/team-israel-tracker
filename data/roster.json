@@ -354,13 +354,13 @@
       "name": "Assaf Lowengart",
       "position": "OF",
       "positionGroup": "hitting",
-      "team": "New York Boulders",
+      "team": "Great Falls Voyagers",
       "level": "Indy",
-      "league": "Frontier League",
+      "league": "Pioneer League",
       "mlbId": null,
       "bbrefId": null,
-      "bbrefRegId": null,
-      "bbrefIdVerified": false,
+      "bbrefRegId": "loweng000ass",
+      "bbrefIdVerified": true,
       "bats": "L"
     },
     {
