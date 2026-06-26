@@ -1,6 +1,14 @@
 {
   "reports": [
     {
+      "weekEnding": "2026-06-26",
+      "weekStarting": "2026-06-19",
+      "season": "2026",
+      "filename": "2026-06-26.json",
+      "activePlayers": 39,
+      "totalTransactions": 11
+    },
+    {
       "weekEnding": "2026-06-19",
       "weekStarting": "2026-06-12",
       "season": "2026",
