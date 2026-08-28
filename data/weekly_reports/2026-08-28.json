@@ -13,7 +13,7 @@
       "A": 2,
       "A+": 1
     },
-    "totalTransactions": 7
+    "totalTransactions": 8
   },
   "last7": {
     "hittingHighlights": [
@@ -95,19 +95,19 @@
           "name": "Alex Bregman",
           "team": "Chicago Cubs",
           "level": "MLB",
-          "PA": 28,
+          "PA": 31,
           "HR": 3,
-          "RBI": 6,
+          "RBI": 7,
           "SB": 0,
-          "G": 6,
-          "AVG": 0.208,
-          "OBP": 0.286,
-          "SLG": 0.583,
-          "OPS": 0.869,
-          "SO_PCT": 0.179,
-          "BB_PCT": 0.107
+          "G": 7,
+          "AVG": 0.222,
+          "OBP": 0.29,
+          "SLG": 0.593,
+          "OPS": 0.883,
+          "SO_PCT": 0.161,
+          "BB_PCT": 0.097
         },
-        "note": "Alex Bregman hit 3 HR with 6 RBI (MLB)"
+        "note": "Alex Bregman hit 3 HR with 7 RBI (MLB)"
       },
       {
         "type": "hr_highlight",
@@ -305,19 +305,19 @@
           "name": "Alex Bregman",
           "team": "Chicago Cubs",
           "level": "MLB",
-          "PA": 121,
+          "PA": 124,
           "HR": 8,
-          "RBI": 23,
+          "RBI": 24,
           "SB": 1,
-          "G": 27,
-          "AVG": 0.28,
+          "G": 28,
+          "AVG": 0.282,
           "OBP": 0.355,
-          "SLG": 0.561,
-          "OPS": 0.916,
-          "SO_PCT": 0.14,
-          "BB_PCT": 0.107
+          "SLG": 0.564,
+          "OPS": 0.919,
+          "SO_PCT": 0.137,
+          "BB_PCT": 0.105
         },
-        "note": "Alex Bregman \u2014 121 PA, OPS .916 (.280/.355/.561) at MLB"
+        "note": "Alex Bregman \u2014 124 PA, OPS .919 (.282/.355/.564) at MLB"
       },
       {
         "type": "top_hitter",
@@ -374,19 +374,19 @@
           "name": "Alex Bregman",
           "team": "Chicago Cubs",
           "level": "MLB",
-          "PA": 121,
+          "PA": 124,
           "HR": 8,
-          "RBI": 23,
+          "RBI": 24,
           "SB": 1,
-          "G": 27,
-          "AVG": 0.28,
+          "G": 28,
+          "AVG": 0.282,
           "OBP": 0.355,
-          "SLG": 0.561,
-          "OPS": 0.916,
-          "SO_PCT": 0.14,
-          "BB_PCT": 0.107
+          "SLG": 0.564,
+          "OPS": 0.919,
+          "SO_PCT": 0.137,
+          "BB_PCT": 0.105
         },
-        "note": "Alex Bregman hit 8 HR with 23 RBI (MLB)"
+        "note": "Alex Bregman hit 8 HR with 24 RBI (MLB)"
       },
       {
         "type": "hr_highlight",
@@ -814,19 +814,19 @@
           "name": "Alex Bregman",
           "team": "Chicago Cubs",
           "level": "MLB",
-          "PA": 599,
+          "PA": 602,
           "HR": 19,
-          "RBI": 69,
+          "RBI": 70,
           "SB": 3,
-          "G": 131,
-          "AVG": 0.252,
+          "G": 132,
+          "AVG": 0.253,
           "OBP": 0.342,
-          "SLG": 0.412,
-          "OPS": 0.754,
-          "SO_PCT": 0.157,
+          "SLG": 0.414,
+          "OPS": 0.756,
+          "SO_PCT": 0.156,
           "BB_PCT": 0.11
         },
-        "note": "Alex Bregman hit 19 HR with 69 RBI (MLB)"
+        "note": "Alex Bregman hit 19 HR with 70 RBI (MLB)"
       },
       {
         "type": "hr_highlight",
@@ -1222,6 +1222,15 @@
   },
   "transactions": [
     {
+      "date": "2026-08-28",
+      "player": "Zach Levenson",
+      "mlbId": 804241,
+      "type": "Assigned",
+      "fromTeam": "Springfield Cardinals",
+      "toTeam": "Memphis Redbirds",
+      "description": "OF Zach Levenson assigned to Memphis Redbirds from Springfield Cardinals."
+    },
+    {
       "date": "2026-08-27",
       "player": "Harrison Cohen",
       "mlbId": 694660,
@@ -1287,34 +1296,6 @@
   ],
   "news": [
     {
-      "title": "Troy Johnston hit by pitch. Mickey Moniak to 3rd. Connor Norby to 2nd. - MLB.com",
-      "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxPYnhSTkFLSXZQQU01NFVJSjdJLUp3Z0NLWkt3REl3akpHOGFxRFRXaU8wZXRNZ1dHdEtIdkM4LUlLRGZEbnFaUUN2dlJFY0s2OVdZWXZqNmxuR0dCZkZfY0lyX2RYM1QxeHBzNVFWVXVNNldKTU9adlQ0bF80amFLRFFyQ2ROMVdwbjZSTHdhVTRWYnRjNzU1MDVZNW1PZ3AzclZEQ19Va2c3M0E0YWxjaTdPU3hUaDFYSXJuRktuZXFFREdaSUxuNGNQbkFxbS1VMWVj?oc=5",
-      "source": "MLB.com",
-      "published": "Thu, 27 Aug 2026 07:43:08 GMT",
-      "query": "\"Troy Johnston\" baseball"
-    },
-    {
-      "title": "Troy Johnston's two-run home run (4) - Yahoo Sports",
-      "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTE1jYnNrS0FoTjJpV3J0S2ZRVW1zVTJPRFJjZE5jd1hGaEhRaGRxOE9TZzRweXVrbkdFVW80NnJmTVRpbUx4M3h3Y20xMVZSQTZRT0JHT2JBZi02QmV1RDhEMnBJbjFEeXhHXzBzeE80UFB5MXFSUmVpNXVaa0lqU0E?oc=5",
-      "source": "Yahoo Sports",
-      "published": "Wed, 26 Aug 2026 23:57:06 GMT",
-      "query": "\"Troy Johnston\" baseball"
-    },
-    {
-      "title": "Rockies' Troy Johnston: Goes deep in huge win - CBS Sports",
-      "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxNeHo5U2haczhHTk50Zjc4YlE2NU11Tm9pZWNIUnV5QzBLa0s0YVJ3UEt1S0NTdGRSclRlaTlyQXd5anpnUm11UVktc3dhb3BId2EwVUdRTmxaQnhqdzJ4SlM1S3c3dUNCZmwyMjIxZ1pvdndGdXRPejViZy16X0ZJMUY2YWlKNE5UUHJLWXQ1SDI5cmtYWFhV?oc=5",
-      "source": "CBS Sports",
-      "published": "Mon, 24 Aug 2026 14:01:30 GMT",
-      "query": "\"Troy Johnston\" baseball"
-    },
-    {
-      "title": "Evan Phillips escapes bases-loaded jam in 10th - Baseball Savant",
-      "url": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQcUNVN3ZscElsaGZWcFpiTHlwM2U3eVo5MXRoTVgtcnFqa0hMZFFMdW1XX2M0emx5cGtCWTFtSEg0b3NFWTVpNlZMc2NOeFdrSzV4Wml5U1dEZFdQakJSX0s3ekx5Ri1VLWVTNlhXWEY0dTJ3UlZuVUZsVGozWkZoUHdIa0p3ZTVJMi1NYlJIUzdhQQ?oc=5",
-      "source": "Baseball Savant",
-      "published": "Mon, 24 Aug 2026 10:30:04 GMT",
-      "query": "\"Evan Phillips\" baseball"
-    },
-    {
       "title": "Rockies' Cole Carrigg: Sitting in series opener in D.C. - CBS Sports",
       "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNTVFUbTBra2tWYWotTk16NXJlRy15dTEta2lVbUNlUnJvUHR4Q1J2M1pMWGZKTExtSUlpNkRTc1MzV2MtTWpyWmx4NmRja0tWN1NDaE9oYVY5M2VQZkNQWHBja3JNWEFxTklLd1U3ODZULUc3T0NIa3JTRUNBVU1Fd2tpZVpVMmViV0ZqbWZON0pXY0ZjSW1XNmJMVUd6dC1SZXc0?oc=5",
       "source": "CBS Sports",
@@ -1329,6 +1310,20 @@
       "query": "\"Cole Carrigg\" baseball"
     },
     {
+      "title": "Troy Johnston hit by pitch. Mickey Moniak to 3rd. Connor Norby to 2nd. - MLB.com",
+      "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxPYnhSTkFLSXZQQU01NFVJSjdJLUp3Z0NLWkt3REl3akpHOGFxRFRXaU8wZXRNZ1dHdEtIdkM4LUlLRGZEbnFaUUN2dlJFY0s2OVdZWXZqNmxuR0dCZkZfY0lyX2RYM1QxeHBzNVFWVXVNNldKTU9adlQ0bF80amFLRFFyQ2ROMVdwbjZSTHdhVTRWYnRjNzU1MDVZNW1PZ3AzclZEQ19Va2c3M0E0YWxjaTdPU3hUaDFYSXJuRktuZXFFREdaSUxuNGNQbkFxbS1VMWVj?oc=5",
+      "source": "MLB.com",
+      "published": "Thu, 27 Aug 2026 07:43:08 GMT",
+      "query": "\"Troy Johnston\" baseball"
+    },
+    {
+      "title": "Troy Johnston's two-run home run (4) - Yahoo Sports",
+      "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTE1jYnNrS0FoTjJpV3J0S2ZRVW1zVTJPRFJjZE5jd1hGaEhRaGRxOE9TZzRweXVrbkdFVW80NnJmTVRpbUx4M3h3Y20xMVZSQTZRT0JHT2JBZi02QmV1RDhEMnBJbjFEeXhHXzBzeE80UFB5MXFSUmVpNXVaa0lqU0E?oc=5",
+      "source": "Yahoo Sports",
+      "published": "Wed, 26 Aug 2026 23:57:06 GMT",
+      "query": "\"Troy Johnston\" baseball"
+    },
+    {
       "title": "Nationals' Jake Bird: Optioned to Triple-A - CBS Sports",
       "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxQUkpKY3RDU01GMGtyeFV0c280SWJPVTlzMl9iRFdzNnFuT2cza2hGYWpiaURRMXNWajFVN2k4SENudGhiMVVmQ2xYeUlUMmt6Rmk5ekMxZVQxZWdqX1NXWGJJOW9DSjloRG4xTVFyU25ONDlmS2d4N1RHSnp1TUcycENzZmFwQXJPTklzVGVHNHJPVm8?oc=5",
       "source": "CBS Sports",
@@ -1339,7 +1334,7 @@
       "title": "Nationals option Jake Bird to Triple-A - NBC Sports",
       "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxQQV9xd3RrQU40OVZwdlJNekFPaG9EQUt0NFRTMDRTR2NCQzVBblJxeU9QdzQtUmNPdHA0Rjc2TkJYeTJCQjFjbGY4M0oxdlRNQ1ZzMXc1aE4wMW41emhUX3p0RHhSbkUzeDJvRTVKNS0yOVhVSHNobFZEak9udUpwbDQyT2xlYnZacHBWQzJ3MUVyM0R4MWhpdy1mNnU3UWozS3pISFJKcw?oc=5",
       "source": "NBC Sports",
-      "published": "Wed, 26 Aug 2026 11:06:00 GMT",
+      "published": "Wed, 26 Aug 2026 17:49:03 GMT",
       "query": "\"Jake Bird\" baseball"
     },
     {
@@ -1350,11 +1345,11 @@
       "query": "\"Jake Bird\" baseball"
     },
     {
-      "title": "Henry Godbout singles on a line drive to left fielder Jose Astudillo. Tyler McDonough scores. Justin Gonzales scores. Johanfran Garcia to 3rd. Henry Godbout to 2nd. - MLB.com",
-      "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQWUZNazI5RFUyM25UbktTZEd2Z0FyenNLTGhLNU93bGg4NGcxd2JodVlXV3d2ZEctcWxOM0ptb2RqMVZQMFprYTVVaHVfd1AyaHdPeGI0Q3llcnpmd3FPZExPVUZKVmdqYVV0Yk1WNlRrNWw2WmlUSnh3eWVQZzBpQVdWRDlKa21reTZZdUVOdXlwN2RUelhmSVA4UnVZc05FTWIwXzNKNWtHZFhpYVFtbV9mTE4?oc=5",
-      "source": "MLB.com",
-      "published": "Wed, 26 Aug 2026 00:59:49 GMT",
-      "query": "\"Henry Godbout\" baseball"
+      "title": "Evan Phillips escapes bases-loaded jam in 10th - Baseball Savant",
+      "url": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQcUNVN3ZscElsaGZWcFpiTHlwM2U3eVo5MXRoTVgtcnFqa0hMZFFMdW1XX2M0emx5cGtCWTFtSEg0b3NFWTVpNlZMc2NOeFdrSzV4Wml5U1dEZFdQakJSX0s3ekx5Ri1VLWVTNlhXWEY0dTJ3UlZuVUZsVGozWkZoUHdIa0p3ZTVJMi1NYlJIUzdhQQ?oc=5",
+      "source": "Baseball Savant",
+      "published": "Mon, 24 Aug 2026 10:30:04 GMT",
+      "query": "\"Evan Phillips\" baseball"
     },
     {
       "title": "Key recent baseball hitter changes: Why Wilyer Abreu, Alex Bregman, others are surging - NBC Sports",
@@ -1364,17 +1359,17 @@
       "query": "\"Alex Bregman\" baseball"
     },
     {
+      "title": "Alex Bregman's RBI double - Yahoo Sports",
+      "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE8zUUtsSlNpQTJEZ2hqdW1HUXk1MU9GSTc2X3B1MVBTV1BDbkRMYUl6STNZWVBjaEYweWtacEdQcGlhZzJISjhqaWZiZmlUbGUtN0N6emg2WUVTQlVvRFZCekRjdzFaM01md0tRYkJYV0cwbFVwSHhqTVJNdw?oc=5",
+      "source": "Yahoo Sports",
+      "published": "Fri, 28 Aug 2026 18:42:30 GMT",
+      "query": "\"Alex Bregman\" baseball"
+    },
+    {
       "title": "Bregman's season-long plan turning into red-hot summer - MLB.com",
       "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE5kcVhsa0xBaFBzdFNtVUZsSTI4cmVvWWplNkRHQ1RXMW9yYmY2RkFzOVB5ZkpWRzJlQ21VOC1COFFUTHQySFBvaHJ3a0NQNWFHdThENjBJa1Nfalota01hS083blk5WWZuOVcxckxnWGttakFnSFVPMnc5bw?oc=5",
       "source": "MLB.com",
       "published": "Mon, 24 Aug 2026 08:26:20 GMT",
-      "query": "\"Alex Bregman\" baseball"
-    },
-    {
-      "title": "Chicago Cubs Announce Interesting Alex Bregman News During D-Backs Series - Yahoo Sports",
-      "url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxPM1EyTXZIczF6YUZIS3VWSWsxem9jM3lKVlA2dm1kNm5EcG5LeW9VVld4VWRJd0FoT1pEUTlUZmZuU1FjekZPVHBubkNzVm9lWGpmNDJRLWdscUlycGxDSDZ4T1NfMzZwek1JMFpZQ0lGeFlwazNTdWRnZTRuQ0dGazdITXRVdldVVTg3WU16V1A?oc=5",
-      "source": "Yahoo Sports",
-      "published": "Wed, 26 Aug 2026 20:29:58 GMT",
       "query": "\"Alex Bregman\" baseball"
     }
   ],
@@ -1671,41 +1666,41 @@
         {
           "mlbId": 608324,
           "stat": {
-            "gamesPlayed": 6,
+            "gamesPlayed": 7,
             "flyOuts": 2,
-            "groundOuts": 6,
-            "airOuts": 9,
+            "groundOuts": 7,
+            "airOuts": 10,
             "runs": 6,
-            "doubles": 0,
+            "doubles": 1,
             "triples": 0,
             "homeRuns": 3,
             "strikeOuts": 5,
             "baseOnBalls": 3,
             "intentionalWalks": 0,
-            "hits": 5,
+            "hits": 6,
             "hitByPitch": 0,
-            "avg": ".208",
-            "atBats": 24,
-            "obp": ".286",
-            "slg": ".583",
-            "ops": ".869",
+            "avg": ".222",
+            "atBats": 27,
+            "obp": ".290",
+            "slg": ".593",
+            "ops": ".883",
             "caughtStealing": 0,
             "stolenBases": 0,
             "stolenBasePercentage": ".---",
             "caughtStealingPercentage": ".---",
             "groundIntoDoublePlay": 2,
             "groundIntoTriplePlay": 0,
-            "numberOfPitches": 109,
-            "plateAppearances": 28,
-            "totalBases": 14,
-            "rbi": 6,
+            "numberOfPitches": 122,
+            "plateAppearances": 31,
+            "totalBases": 16,
+            "rbi": 7,
             "leftOnBase": 15,
             "sacBunts": 0,
             "sacFlies": 1,
-            "babip": ".118",
-            "groundOutsToAirouts": "0.67",
+            "babip": ".150",
+            "groundOutsToAirouts": "0.70",
             "catchersInterference": 0,
-            "atBatsPerHomeRun": "8.00"
+            "atBatsPerHomeRun": "9.00"
           },
           "highestLevel": "MLB"
         },
@@ -3673,41 +3668,41 @@
         {
           "mlbId": 608324,
           "stat": {
-            "gamesPlayed": 27,
+            "gamesPlayed": 28,
             "flyOuts": 21,
-            "groundOuts": 27,
-            "airOuts": 34,
+            "groundOuts": 28,
+            "airOuts": 35,
             "runs": 20,
-            "doubles": 6,
+            "doubles": 7,
             "triples": 0,
             "homeRuns": 8,
             "strikeOuts": 17,
             "baseOnBalls": 13,
             "intentionalWalks": 0,
-            "hits": 30,
+            "hits": 31,
             "hitByPitch": 0,
-            "avg": ".280",
-            "atBats": 107,
+            "avg": ".282",
+            "atBats": 110,
             "obp": ".355",
-            "slg": ".561",
-            "ops": ".916",
+            "slg": ".564",
+            "ops": ".919",
             "caughtStealing": 0,
             "stolenBases": 1,
             "stolenBasePercentage": "1.000",
             "caughtStealingPercentage": ".000",
             "groundIntoDoublePlay": 5,
             "groundIntoTriplePlay": 0,
-            "numberOfPitches": 477,
-            "plateAppearances": 121,
-            "totalBases": 60,
-            "rbi": 23,
+            "numberOfPitches": 490,
+            "plateAppearances": 124,
+            "totalBases": 62,
+            "rbi": 24,
             "leftOnBase": 44,
             "sacBunts": 0,
             "sacFlies": 1,
-            "babip": ".265",
-            "groundOutsToAirouts": "0.79",
+            "babip": ".267",
+            "groundOutsToAirouts": "0.80",
             "catchersInterference": 0,
-            "atBatsPerHomeRun": "13.38"
+            "atBatsPerHomeRun": "13.75"
           },
           "highestLevel": "MLB"
         },
@@ -5893,39 +5888,39 @@
           "mlbId": 608324,
           "stat": {
             "age": 32,
-            "gamesPlayed": 131,
-            "groundOuts": 122,
-            "airOuts": 178,
+            "gamesPlayed": 132,
+            "groundOuts": 123,
+            "airOuts": 179,
             "runs": 75,
-            "doubles": 24,
+            "doubles": 25,
             "triples": 1,
             "homeRuns": 19,
             "strikeOuts": 94,
             "baseOnBalls": 66,
             "intentionalWalks": 2,
-            "hits": 131,
+            "hits": 132,
             "hitByPitch": 8,
-            "avg": ".252",
-            "atBats": 519,
+            "avg": ".253",
+            "atBats": 522,
             "obp": ".342",
-            "slg": ".412",
-            "ops": ".754",
+            "slg": ".414",
+            "ops": ".756",
             "caughtStealing": 1,
             "stolenBases": 3,
             "stolenBasePercentage": ".750",
             "caughtStealingPercentage": ".250",
             "groundIntoDoublePlay": 15,
-            "numberOfPitches": 2383,
-            "plateAppearances": 599,
-            "totalBases": 214,
-            "rbi": 69,
+            "numberOfPitches": 2396,
+            "plateAppearances": 602,
+            "totalBases": 216,
+            "rbi": 70,
             "leftOnBase": 263,
             "sacBunts": 0,
             "sacFlies": 6,
             "babip": ".272",
             "groundOutsToAirouts": "0.69",
             "catchersInterference": 0,
-            "atBatsPerHomeRun": "27.32"
+            "atBatsPerHomeRun": "27.47"
           },
           "highestLevel": "MLB"
         },
