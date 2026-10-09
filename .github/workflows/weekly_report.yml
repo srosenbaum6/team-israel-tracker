@@ -1,10 +1,11 @@
 name: Weekly Report
 
 on:
-  schedule:
-    # Every Friday at 9 AM UTC (5 AM ET / 2 AM PT)
-    # Runs one hour after the daily indy stats scraper (8 AM UTC) so indy data is fresh.
-    - cron: '0 9 * * 5'
+  # schedule:
+  #   # Every Friday at 9 AM UTC (5 AM ET / 2 AM PT)
+  #   # Runs one hour after the daily indy stats scraper (8 AM UTC) so indy data is fresh.
+  #   # Paused for the offseason — uncomment to resume weekly emails.
+  #   - cron: '0 9 * * 5'
   workflow_dispatch:
     # Manual trigger — useful for testing or backfilling a missed week.
     # Leave inputs blank to use today / 7 days ago.
